@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.CashMapper">
+  <resultMap id="BaseResultMap" type="com.ams.system.entity.Cash">
+    <id column="cash_id" jdbcType="INTEGER" property="cashId" />
+    <result column="money" jdbcType="INTEGER" property="money" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cash
+    where cash_id = #{cashId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ams.system.entity.Cash">
+    insert into cash (cash_id, money)
+    values (#{cashId,jdbcType=INTEGER}, #{money,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.Cash">
+    update cash
+    set money = #{money,jdbcType=INTEGER}
+    where cash_id = #{cashId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select cash_id, money
+    from cash
+    where cash_id = #{cashId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select cash_id, money
+    from cash
+  </select>
+</mapper>

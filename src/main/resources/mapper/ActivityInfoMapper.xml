@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.ActivityInfoMapper">
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.ActivityInfo">
+        <id column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="activity_theme" jdbcType="VARCHAR" property="activityTheme" />
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+        <result column="over_time" jdbcType="TIMESTAMP" property="overTime" />
+        <result column="principal_name" jdbcType="VARCHAR" property="principalName" />
+        <result column="activity_flag" jdbcType="INTEGER" property="activityFlag" />
+        <result column="detail_info" jdbcType="VARCHAR" property="detailInfo" />
+    </resultMap>
+
+    <insert id="insert" keyColumn="activity_id" keyProperty="activityId" parameterType="com.ams.system.entity.ActivityInfo" useGeneratedKeys="true">
+        insert into activity_info (activity_theme, start_time, 
+          over_time, principal_name, activity_flag, 
+          detail_info)
+        values (#{activityTheme,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, 
+          #{overTime,jdbcType=TIMESTAMP}, #{principalName,jdbcType=VARCHAR}, #{activityFlag,jdbcType=INTEGER}, 
+          #{detailInfo,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from activity_info
+        where activity_id = #{activityId,jdbcType=INTEGER}
+    </delete>
+
+    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.ActivityInfo">
+        update activity_info
+        <set>
+            <if test="activityTheme != null">
+                activity_theme = #{activityTheme,jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="overTime != null">
+                over_time = #{overTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="principalName != null">
+                principal_name = #{principalName,jdbcType=VARCHAR},
+            </if>
+            <if test="activityFlag != null">
+                activity_flag = #{activityFlag,jdbcType=INTEGER},
+            </if>
+            <if test="detailInfo != null">
+                detail_info = #{detailInfo,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where activity_id = #{activityId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select activity_id, activity_theme, start_time, over_time, principal_name, activity_flag, 
+        detail_info
+        from activity_info
+        where activity_id = #{activityId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAllWithQuery" resultMap="BaseResultMap">
+        select activity_id, activity_theme, start_time, over_time, principal_name, activity_flag, 
+        detail_info
+        from activity_info
+        where 1=1
+        <if test="activityId != null">
+            and activity_id = #{activityId}
+        </if>
+        <if test="activityTheme != null">
+            and activity_theme = #{activityTheme}
+        </if>
+        <if test="startTime != null">
+            and start_time = #{startTime }
+        </if>
+        <if test="overTime != null">
+            and over_time = #{overTime}
+        </if>
+        <if test="principalName != null">
+            and principal_name = #{principalName}
+        </if>
+        <if test="activityFlag != null">
+            and activity_flag = #{activityFlag}
+        </if>
+        <if test="detailInfo != null">
+            and detail_info like "%"#{detailInfo}"%"
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.RoleMenuMapper">
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.RoleMenu">
+        <id column="role_id" jdbcType="INTEGER" property="roleId" />
+        <id column="menu_id" jdbcType="INTEGER" property="menuId" />
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="map">
+        delete from role_menu
+        where role_id = #{roleId,jdbcType=INTEGER}
+          and menu_id = #{menuId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.ams.system.entity.RoleMenu">
+        insert into role_menu (role_id, menu_id)
+        values (#{roleId,jdbcType=INTEGER}, #{menuId,jdbcType=INTEGER})
+    </insert>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select role_id, menu_id
+        from role_menu
+    </select>
+
+    <delete id="deleteRoleMenuByRoleId" parameterType="java.lang.Integer">
+        delete
+        from role_menu
+        where role_id = #{roleId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteRoleMenuByMenuId" parameterType="java.lang.Integer">
+        delete
+        from role_menu
+        where menu_id = #{menuId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertRoleMenus">
+        insert into role_menu(role_id,menu_id)
+        values
+        <foreach collection="menuIds" item="menuId" index="index" separator=",">
+            (#{roleId}, #{menuId})
+        </foreach>
+    </insert>
+
+    <select id="getMenuByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select menu_id
+        from role_menu
+        where role_id = #{roleId}
+    </select>
+</mapper>

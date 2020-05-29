@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.DepartmentMapper">
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.Department">
+        <id column="department_id" jdbcType="INTEGER" property="departmentId" />
+        <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+    
+    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.Department">
+        update department
+        <set>
+            <if test="departmentName != null">
+                department_name = #{departmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where department_id = #{departmentId,jdbcType=INTEGER}
+    </update>
+    
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select department_id, department_name, remark, create_time, modify_time
+        from department
+        where department_id = #{departmentId,jdbcType=INTEGER}
+    </select>
+    
+    <select id="selectAll" resultMap="BaseResultMap">
+        select department_id, department_name, remark, create_time, modify_time
+        from department
+    </select>
+
+    <insert id="insert" keyColumn="department_id" keyProperty="departmentId" parameterType="com.ams.system.entity.Department" useGeneratedKeys="true">
+        insert into department (department_name, remark)
+        values (#{departmentName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from department
+        where department_id = #{departmentId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectAllWithQuery" resultMap="BaseResultMap">
+        select department_id, department_name, remark, create_time, modify_time
+        from department
+        where 1=1
+        <if test="departmentId != null">
+            and department_id = #{departmentId}
+        </if>
+        <if test="departmentName != null">
+            and department_name = #{departmentName}
+        </if>
+        <if test="remark != null">
+            and remark like "%"#{remark}"%"
+        </if>
+        order by department_id
+    </select>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.OperatorMapper">
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.Operator">
+        <id column="operator_id" jdbcType="INTEGER" property="operatorId" />
+        <result column="menu_id" jdbcType="INTEGER" property="menuId" />
+        <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="perms" jdbcType="VARCHAR" property="perms" />
+        <result column="http_method" jdbcType="VARCHAR" property="httpMethod" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from operator
+        where operator_id = #{operatorId,jdbcType=INTEGER}
+    </delete>
+    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.Operator">
+        update operator
+        <set>
+            <if test="menuId != null">
+                menu_id = #{menuId,jdbcType=INTEGER},
+            </if>
+            <if test="operatorName != null">
+                operator_name = #{operatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="perms != null">
+                perms = #{perms,jdbcType=VARCHAR},
+            </if>
+            <if test="httpMethod">
+                http_method = #{httpMethod,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where operator_id = #{operatorId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select operator_id, menu_id, operator_name, url, perms, http_method, create_time, 
+        modify_time
+        from operator
+        where operator_id = #{operatorId,jdbcType=INTEGER}
+    </select>
+    
+    <select id="selectAll" resultMap="BaseResultMap">
+        select operator_id, menu_id, operator_name, url, perms, http_method, create_time, 
+        modify_time
+        from operator
+    </select>
+
+   <insert id="insert" keyColumn="operator_id" keyProperty="operatorId" parameterType="com.ams.system.entity.Operator" useGeneratedKeys="true">
+        insert into operator (menu_id, operator_name, 
+          url, perms, http_method)
+        values (#{menuId,jdbcType=INTEGER}, #{operatorName,jdbcType=VARCHAR}, 
+          #{url,jdbcType=VARCHAR}, #{perms,jdbcType=VARCHAR}, #{httpMethod,jdbcType=VARCHAR})
+    </insert>
+    
+    <delete id="deleteByMenuId" parameterType="java.lang.Integer">
+        delete
+        from operator
+        where menu_id = #{menuId}
+    </delete>
+    
+    <select id="selectByMenuId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select operator_id, menu_id, operator_name, url, perms, http_method, create_time, 
+        modify_time
+        from operator
+        where menu_id = #{menuId}
+    </select>
+</mapper>

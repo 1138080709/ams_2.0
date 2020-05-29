@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.MemberApplicateInfoMapper">
+  <resultMap id="BaseResultMap" type="com.ams.system.entity.MemberApplicateInfo">
+    <id column="applicate_id" jdbcType="INTEGER" property="applicateId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="digits" jdbcType="VARCHAR" property="digits" />
+    <result column="college" jdbcType="VARCHAR" property="college" />
+    <result column="major" jdbcType="VARCHAR" property="major" />
+    <result column="belong_class" jdbcType="VARCHAR" property="belongClass" />
+    <result column="grade" jdbcType="VARCHAR" property="grade" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="applicate_section" jdbcType="VARCHAR" property="applicateSection" />
+    <result column="applicate_job" jdbcType="VARCHAR" property="applicateJob" />
+    <result column="applicate_flag" jdbcType="INTEGER" property="applicateFlag" />
+    <result column="applicate_time" jdbcType="TIMESTAMP" property="applicateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from member_applicate_info
+    where applicate_id = #{applicateId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ams.system.entity.MemberApplicateInfo">
+    insert into member_applicate_info (applicate_id, `name`, digits, 
+      college, major, belong_class, 
+      grade, phone, email, 
+      applicate_section, applicate_job, applicate_flag, 
+      applicate_time)
+    values (#{applicateId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{digits,jdbcType=VARCHAR}, 
+      #{college,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, #{belongClass,jdbcType=VARCHAR}, 
+      #{grade,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{applicateSection,jdbcType=VARCHAR}, #{applicateJob,jdbcType=VARCHAR}, #{applicateFlag,jdbcType=INTEGER}, 
+      #{applicateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.MemberApplicateInfo">
+    update member_applicate_info
+    set `name` = #{name,jdbcType=VARCHAR},
+      digits = #{digits,jdbcType=VARCHAR},
+      college = #{college,jdbcType=VARCHAR},
+      major = #{major,jdbcType=VARCHAR},
+      belong_class = #{belongClass,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      applicate_section = #{applicateSection,jdbcType=VARCHAR},
+      applicate_job = #{applicateJob,jdbcType=VARCHAR},
+      applicate_flag = #{applicateFlag,jdbcType=INTEGER},
+      applicate_time = #{applicateTime,jdbcType=TIMESTAMP}
+    where applicate_id = #{applicateId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select applicate_id, `name`, digits, college, major, belong_class, grade, phone, 
+    email, applicate_section, applicate_job, applicate_flag, applicate_time
+    from member_applicate_info
+    where applicate_id = #{applicateId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select applicate_id, `name`, digits, college, major, belong_class, grade, phone, 
+    email, applicate_section, applicate_job, applicate_flag, applicate_time
+    from member_applicate_info
+  </select>
+</mapper>

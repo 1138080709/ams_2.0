@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.StudentDepartmentMapper">
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.StudentDepartment">
+        <id column="student_id" jdbcType="INTEGER" property="studentId" />
+        <id column="department_id" jdbcType="INTEGER" property="departmentId" />
+        <result column="job" jdbcType="VARCHAR" property="job" />
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="map">
+        delete from student_department
+        where student_id = #{studentId,jdbcType=INTEGER}
+          and department_id = #{departmentId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.ams.system.entity.StudentDepartment">
+        insert into student_department (student_id, department_id, job)
+        values (#{studentId,jdbcType=INTEGER}, #{departmentId,jdbcType=INTEGER}, #{job,jdbcType=VARCHAR})
+    </insert>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select student_id, department_id, job
+        from student_department
+    </select>
+  
+    <delete id="deleteByStudentId" parameterType="java.lang.Integer">
+        delete 
+        from student_department
+        where student_id = #{studentId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteByDepartmentId" parameterType="java.lang.Integer">
+        delete 
+        from student_department
+        where department_id = #{departmentId,jdbcType=INTEGER}
+      </delete>
+    
+    <select id="queryStudentInfoByDepartmentId" resultType="com.ams.system.entity.Student" parameterType="java.lang.Integer">
+        select student.student_id, `name`, digits, college, major, belong_class, grade, phone, email, student_department.job
+        from student_department,student
+        where department_id = #{departmentId}
+        and student_department.student_id = student.student_id
+    </select>
+</mapper>

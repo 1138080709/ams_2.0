@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.MenuMapper">
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.Menu">
+        <id column="menu_id" jdbcType="INTEGER" property="menuId"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+        <result column="menu_name" jdbcType="VARCHAR" property="menuName"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="perms" jdbcType="VARCHAR" property="perms"/>
+        <result column="order_num" jdbcType="INTEGER" property="orderNum"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon"/>
+    </resultMap>
+    <resultMap id="TreeBaseResultMap" type="com.ams.system.entity.Menu">
+        <id column="menu_id" jdbcType="INTEGER" property="menuId"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+        <result column="menu_name" jdbcType="VARCHAR" property="menuName"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="perms" jdbcType="VARCHAR" property="perms"/>
+        <result column="order_num" jdbcType="INTEGER" property="orderNum"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon"/>
+        <collection property="children" ofType="com.ams.system.entity.Menu" select="selectAllTree"
+                    column="{parent_id = menu_id}"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        menu_id, parent_id, menu_name, url, perms, order_num, create_time, modify_time, icon
+    </sql>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from menu
+        where menu_id = #{menuId,jdbcType=INTEGER}
+    </delete>
+    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.Menu">
+        update menu
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=INTEGER},
+            </if>
+            <if test="menuName != null">
+                menu_name = #{menuName,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="perms != null">
+                perms = #{perms,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                order_num = #{orderNum,jdbcType=INTEGER},
+            </if>
+            <if test="icon != null">
+                icon = #{icon,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where menu_id = #{menuId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select menu_id, parent_id, menu_name, url, perms, order_num, create_time, modify_time, 
+        icon
+        from menu
+        where menu_id = #{menuId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select menu_id, parent_id, menu_name, url, perms, order_num, create_time, modify_time, 
+        icon
+        from menu
+        order by order_num
+    </select>
+
+    <select id="selectMenuByUsername" resultMap="BaseResultMap">
+        select distinct menu.menu_id,
+        menu.parent_id,
+        menu.menu_name,
+        menu.url,
+        menu.perms,
+        menu.order_num,
+        menu.icon
+        from user,
+        role,
+        user_role,
+        menu,
+        role_menu
+        where user.user_id = user_role.user_id
+        and role.role_id = user_role.role_id
+        and role.role_id = role_menu.role_id
+        and menu.menu_id = role_menu.menu_id
+        and user.username = #{username,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectAllTree" resultMap="TreeBaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from menu
+        <where>
+            <choose>
+                <when test="parent_id != null">
+                    and parent_id = #{parent_id}
+                </when>
+                <otherwise>
+                    and parent_id = 0
+                </otherwise>
+            </choose>
+        </where>
+        order by order_num
+    </select>
+
+    <select id="selectMaxOrderNum" resultType="java.lang.Integer">
+        select max(order_num)
+        from menu
+    </select>
+
+    <insert id="insert" keyColumn="menu_id" keyProperty="menuId" parameterType="com.ams.system.entity.Menu" useGeneratedKeys="true">
+        insert into menu (parent_id, menu_name, 
+          url, perms, order_num, icon
+          )
+        values (#{parentId,jdbcType=INTEGER}, #{menuName,jdbcType=VARCHAR}, 
+          #{url,jdbcType=VARCHAR}, #{perms,jdbcType=VARCHAR}, #{orderNum,jdbcType=INTEGER}, 
+           #{icon,jdbcType=VARCHAR}
+          )
+    </insert>
+
+    <select id="selectChildrenIdByMenuId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select menu_id
+        from menu
+        where parent_id = #{menuId} 
+    </select>
+</mapper>

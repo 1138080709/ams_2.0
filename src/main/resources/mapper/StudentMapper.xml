@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.StudentMapper">
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.Student">
+        <id column="student_id" jdbcType="INTEGER" property="studentId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="digits" jdbcType="VARCHAR" property="digits" />
+        <result column="college" jdbcType="VARCHAR" property="college" />
+        <result column="major" jdbcType="VARCHAR" property="major" />
+        <result column="belong_class" jdbcType="VARCHAR" property="belongClass" />
+        <result column="grade" jdbcType="VARCHAR" property="grade" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+      delete from student
+      where student_id = #{studentId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.ams.system.entity.Student">
+        insert into student (student_id, `name`, digits, 
+            college, major, belong_class, 
+            grade, phone, email)
+        values (#{studentId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{digits,jdbcType=VARCHAR}, 
+            #{college,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, #{belongClass,jdbcType=VARCHAR}, 
+            #{grade,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.Student">
+        update student
+        set `name` = #{name,jdbcType=VARCHAR},
+            digits = #{digits,jdbcType=VARCHAR},
+            college = #{college,jdbcType=VARCHAR},
+            major = #{major,jdbcType=VARCHAR},
+            belong_class = #{belongClass,jdbcType=VARCHAR},
+            grade = #{grade,jdbcType=VARCHAR},
+            phone = #{phone,jdbcType=VARCHAR},
+            email = #{email,jdbcType=VARCHAR}
+        where student_id = #{studentId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select student_id, `name`, digits, college, major, belong_class, grade, phone, email
+        from student
+        where student_id = #{studentId,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select student_id, `name`, digits, college, major, belong_class, grade, phone, email
+        from student
+    </select>
+  
+  
+    <select id="countByDigits" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*)
+        from student
+        where digits = #{digits}
+    </select>
+
+    <insert id="insertSelective" keyColumn="student_id" keyProperty="studentId" parameterType="com.ams.system.entity.Student"
+            useGeneratedKeys="true">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `name`,digits,
+            <if test="college != null">
+                college,
+            </if>
+            <if test="major != null">
+                major,
+            </if>
+            <if test="belongClass != null">
+                belong_class,
+            </if>
+            <if test="grade != null">
+                grade,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{name,jdbcType=VARCHAR}, #{digits,jdbcType=VARCHAR},
+            <if test="college != null">
+                #{college,jdbcType=VARCHAR},
+            </if>
+            <if test="major != null">
+                #{major,jdbcType=VARCHAR},
+            </if>
+            <if test="belongClass != null">
+                #{belongClass,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    
+    <select id="countByDigitsNotIncludeStudentId" resultType="java.lang.Integer">
+        select count(*)
+        from student
+        where digits = #{digits}
+        and student_id != #{studentId}
+    </select>
+    
+    <update id="updateByPrimaryKeySelective" parameterType="com.ams.system.entity.Student">
+        update student
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="digits != null">
+                digits = #{digits,jdbcType=VARCHAR},
+            </if>
+            <if test="college != null">
+                college = #{college,jdbcType=VARCHAR},
+            </if>
+            <if test="major != null">
+                major = #{major,jdbcType=VARCHAR},
+            </if>
+            <if test="belongClass != null">
+                belongClass = #{belongClass,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                grade = #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where student_id = #{studentId}
+    </update>
+</mapper>

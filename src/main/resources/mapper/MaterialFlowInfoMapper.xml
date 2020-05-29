@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ams.system.dao.MaterialFlowInfoMapper">
+  <resultMap id="BaseResultMap" type="com.ams.system.entity.MaterialFlowInfo">
+    <id column="material_flow_id" jdbcType="INTEGER" property="materialFlowId" />
+    <result column="material_id" jdbcType="INTEGER" property="materialId" />
+    <result column="info_type" jdbcType="INTEGER" property="infoType" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="purpose" jdbcType="VARCHAR" property="purpose" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="organization_name" jdbcType="VARCHAR" property="organizationName" />
+    <result column="principal_name" jdbcType="VARCHAR" property="principalName" />
+    <result column="principal_phone" jdbcType="VARCHAR" property="principalPhone" />
+    <result column="auditor_id" jdbcType="INTEGER" property="auditorId" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from material_flow_info
+    where material_flow_id = #{materialFlowId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ams.system.entity.MaterialFlowInfo">
+    insert into material_flow_info (material_flow_id, material_id, info_type, 
+      `number`, purpose, `date`, 
+      organization_name, principal_name, principal_phone, 
+      auditor_id, remark)
+    values (#{materialFlowId,jdbcType=INTEGER}, #{materialId,jdbcType=INTEGER}, #{infoType,jdbcType=INTEGER}, 
+      #{number,jdbcType=INTEGER}, #{purpose,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, 
+      #{organizationName,jdbcType=VARCHAR}, #{principalName,jdbcType=VARCHAR}, #{principalPhone,jdbcType=VARCHAR}, 
+      #{auditorId,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.MaterialFlowInfo">
+    update material_flow_info
+    set material_id = #{materialId,jdbcType=INTEGER},
+      info_type = #{infoType,jdbcType=INTEGER},
+      `number` = #{number,jdbcType=INTEGER},
+      purpose = #{purpose,jdbcType=VARCHAR},
+      `date` = #{date,jdbcType=VARCHAR},
+      organization_name = #{organizationName,jdbcType=VARCHAR},
+      principal_name = #{principalName,jdbcType=VARCHAR},
+      principal_phone = #{principalPhone,jdbcType=VARCHAR},
+      auditor_id = #{auditorId,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR}
+    where material_flow_id = #{materialFlowId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select material_flow_id, material_id, info_type, `number`, purpose, `date`, organization_name, 
+    principal_name, principal_phone, auditor_id, remark
+    from material_flow_info
+    where material_flow_id = #{materialFlowId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select material_flow_id, material_id, info_type, `number`, purpose, `date`, organization_name, 
+    principal_name, principal_phone, auditor_id, remark
+    from material_flow_info
+  </select>
+</mapper>
