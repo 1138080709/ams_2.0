@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -93,5 +94,44 @@ public class MenuService {
     public List<Menu> selectCurrentUserMenuTree() {
         User user = ShiroUtils.getCurrentUser();
         return selectMenuTreeVOByUsername(user.getUsername());
+    }
+
+    /**
+     * 根据父ID获取所有菜单
+     */
+    public List<Menu> selectByParentId(Integer parentId) {
+        return menuDao.selectByParentId(parentId);
+    }
+
+    /**
+     * 获取所有菜单并添加根节点(树形结构)
+     */
+    public List<Menu> getAllMenuTreeAndRoot() {
+        List<Menu> allMenuTree = getAllTree();
+        return addRootNode("导航目录", 0, allMenuTree);
+    }
+
+    /**
+     * 将树形结构添加到一个根节点下
+     */
+    private List<Menu> addRootNode(String rootName, int rootId, List<Menu> children) {
+        Menu root = new Menu();
+        root.setMenuId(rootId);
+        root.setMenuName(rootName);
+        root.setChildren(children);
+        List<Menu> rootList = new ArrayList<>();
+        rootList.add(root);
+        return rootList;
+    }
+
+    /**
+     * 获取所有菜单并统计菜单下的操作权限数(树形结构)
+     */
+    public List<Menu> getAllMenuAndCountOperatorTreeAndRoot() {
+        return menuDao.selectAllMenuAndCountOperator();
+    }
+
+    public void swapSort(Integer currentId, Integer swapId) {
+        menuDao.swapSort(currentId,swapId);
     }
 }

@@ -38,14 +38,24 @@
 
     <update id="updateByPrimaryKeySelective" parameterType="com.ams.system.entity.Role">
         update role
-        <set>
-            <if test="roleName != null">
-                role_name = #{roleName}
+        <trim prefix="set" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">
+                role_name = #{roleName,jdbcType=VARCHAR},
             </if>
-            <if test="remark != null">
-                remark = #{remark}
+            <if test="remark != null and remark != ''">
+                remark = #{remark,jdbcType=VARCHAR},
             </if>
-        </set>
-        where role_id = #{roleId}
+        </trim>
+        where role_id = #{roleId,jdbcType=INTEGER}
     </update>
+
+    <select id="selectAllWithQuery" resultMap="BaseResultMap">
+        select role_id, role_name, remark, create_time, modify_time
+        from role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                AND role_name like concat('%',#{roleName},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

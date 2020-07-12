@@ -53,4 +53,19 @@ public interface MenuMapper {
      * 删除指定菜单
      */
     int deleteByPrimaryKey(Integer menuId);
+
+    /**
+     * 根据父Id获取菜单
+     */
+    List<Menu> selectByParentId(Integer parentId);
+
+    /**
+     * 获取所有菜单并统计菜单下的操作权限数(树形结构)
+     */
+    List<Menu> selectAllMenuAndCountOperator();
+
+    /**
+     * 交换两个菜单的顺序
+     */
+    int swapSort(@Param("currentId")Integer currentId, @Param("swapId")Integer swapId);
 }

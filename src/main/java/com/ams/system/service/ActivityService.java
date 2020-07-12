@@ -1,5 +1,6 @@
 package com.ams.system.service;
 
+import com.ams.common.utils.ResultBean;
 import com.ams.system.dao.ActivityInfoMapper;
 import com.ams.system.dao.ActivityParticipatorInfoMapper;
 import com.ams.system.entity.ActivityInfo;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -21,28 +21,28 @@ import java.util.List;
 public class ActivityService {
 
     @Resource
-    private ActivityInfoMapper activityInfoMapper;
+    private ActivityInfoMapper activityInfoDao;
 
     @Resource
-    private ActivityParticipatorInfoMapper activityParticipatorInfoMapper;
+    private ActivityParticipatorInfoMapper activityParticipatorInfoDao;
 
     @Transactional
     public Integer add(ActivityInfo activityInfo) {
         judgeActivityFlag(activityInfo);
-        activityInfoMapper.insert(activityInfo);
+        activityInfoDao.insert(activityInfo);
         return activityInfo.getActivityId();
     }
 
     @Transactional
     public void delete(Integer activityId) {
-        activityInfoMapper.deleteByPrimaryKey(activityId);
-        activityParticipatorInfoMapper.deleteByActivityId(activityId);
+        activityInfoDao.deleteByPrimaryKey(activityId);
+        activityParticipatorInfoDao.deleteByActivityId(activityId);
     }
 
     @Transactional
     public void edit(ActivityInfo activityInfo) {
         judgeActivityFlag(activityInfo);
-        activityInfoMapper.updateByPrimaryKey(activityInfo);
+        activityInfoDao.updateByPrimaryKey(activityInfo);
     }
 
     /**
@@ -60,11 +60,35 @@ public class ActivityService {
     }
 
     public ActivityInfo selectByActivityId(Integer activityId) {
-        return activityInfoMapper.selectByPrimaryKey(activityId);
+        return activityInfoDao.selectByPrimaryKey(activityId);
     }
 
     public List<ActivityInfo> selectAllWithQuery(int page, int limit, ActivityInfo activityInfoQuery) {
         PageHelper.startPage(page,limit);
-        return activityInfoMapper.selectAllWithQuery(activityInfoQuery);
+        return activityInfoDao.selectAllWithQuery(activityInfoQuery);
+    }
+
+    public List<ActivityInfo> selectAll() {
+        return activityInfoDao.selectAll();
+    }
+
+    public Integer apply(ActivityParticipatorInfo activityParticipatorInfo) {
+        return activityParticipatorInfoDao.insert(activityParticipatorInfo);
+    }
+
+    public void applyEdit(ActivityParticipatorInfo activityParticipatorInfo) {
+        activityParticipatorInfoDao.updateByPrimaryKey(activityParticipatorInfo);
+    }
+
+    public void applyDel(Integer participatorId) {
+        activityParticipatorInfoDao.deleteByPrimaryKey(participatorId);
+    }
+
+    public List<ActivityParticipatorInfo> applyInfoListById(Integer activityId) {
+        return activityParticipatorInfoDao.selectAllByActivityId(activityId);
+    }
+
+    public ActivityInfo getActivityInfo(Integer activityId) {
+        return activityInfoDao.selectByPrimaryKey(activityId);
     }
 }

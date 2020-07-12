@@ -17,17 +17,16 @@ import java.util.List;
  */
 @Service
 public class DepartmentService {
-    
+
     @Resource
     private DepartmentMapper departmentDao;
-    
+
     @Resource
     private StudentDepartmentMapper studentDepartmentDao;
 
 
     public Integer add(Department department) {
-        departmentDao.insert(department);
-        return department.getDepartmentId();
+        return departmentDao.insert(department);
     }
 
     @Transactional

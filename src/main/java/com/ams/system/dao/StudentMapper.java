@@ -42,4 +42,9 @@ public interface StudentMapper {
      * 更新学生信息
      */
     Integer updateByPrimaryKeySelective(Student student);
+
+    /**
+     * 根据查询条件获取学生信息
+     */
+    List<Student> selectAllWithQuery(Student studentQuery);
 }

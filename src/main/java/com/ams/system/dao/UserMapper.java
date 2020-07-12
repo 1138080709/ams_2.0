@@ -1,5 +1,6 @@
 package com.ams.system.dao;
 
+import com.ams.system.entity.Student;
 import com.ams.system.entity.User;
 import com.sun.imageio.plugins.common.I18N;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,8 +12,6 @@ import java.util.Set;
 @Mapper
 public interface UserMapper {
 
-    User selectByPrimaryKey(Integer userId);
-
     List<User> selectAll();
 
     int updateByPrimaryKey(User record);
@@ -20,9 +19,9 @@ public interface UserMapper {
 //   ---------------------------------------------------------------    //
 
     /**
-     * 获取用户所拥有的职位名
+     * 获取用户所拥有的角色名
      */
-    Set<String> selectJobNameByUsername(@Param("username") String username);
+    Set<String> selectRoleNameByUsername(@Param("username") String username);
 
     /**
      * 获取用户所拥有的操作权限
@@ -83,4 +82,19 @@ public interface UserMapper {
      * 根据查询条件返回用户信息
      */
     List<User> selectAllWithQuery(User userQuery);
+
+    /**
+     * 根据userId查询用户
+     */
+    User selectByPrimaryKey(@Param("userId") Integer userId);
+
+    /**
+     * 查询用户的角色ID
+     */
+    List<Integer> selectRoleIdsByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 根据userId查询用户(返回具体学生信息)
+     */
+    User selectByUserId(@Param("userId") Integer userId);
 }

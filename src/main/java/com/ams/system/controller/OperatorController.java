@@ -10,6 +10,7 @@ import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,6 +25,16 @@ public class OperatorController {
     
     @Resource
     private OperatorService operatorService;
+
+    @GetMapping("/index")
+    public String index() {
+        return "operator/operator-list";
+    }
+    
+    @GetMapping
+    public String add() {
+        return "operator/operator-add";
+    }
     
     @ApiOperation("新增操作")
     @RefreshFilterChain
@@ -31,6 +42,13 @@ public class OperatorController {
     @ResponseBody
     public ResultBean add(Operator operator) {
         return ResultBean.success(operatorService.add(operator));
+    }
+    
+    @GetMapping("/{operatorId}")
+    public String edit(Model model,@PathVariable("operatorId") Integer operatorId) {
+        Operator operator = operatorService.selectOperatorByOperatorId(operatorId);
+        model.addAttribute("operator",operator);
+        return "operator/operator-add";
     }
     
     @ApiOperation("编辑操作")
@@ -51,18 +69,24 @@ public class OperatorController {
         return ResultBean.success();
     }
     
-    @ApiOperation("获取指定的操作权限")
-    @GetMapping("/{operatorId}")
-    @ResponseBody
-    public ResultBean getInfo(@PathVariable("operatorId") Integer operatorId) {
-        return ResultBean.success(operatorService.selectOperatorByOperatorId(operatorId));
-    }
+//    @ApiOperation("获取指定的操作权限")
+//    @GetMapping("/{operatorId}")
+//    @ResponseBody
+//    public ResultBean getInfo(@PathVariable("operatorId") Integer operatorId) {
+//        return ResultBean.success(operatorService.selectOperatorByOperatorId(operatorId));
+//    }
     
     @ApiOperation(value = "获取指定菜单的操作列表")
     @GetMapping("/list")
     @ResponseBody
     public ResultBean getList(@RequestParam(required = false) Integer menuId) {
         return ResultBean.success(operatorService.selectByMenuId(menuId));
+    }
+    
+    @GetMapping("/tree")
+    @ResponseBody
+    public ResultBean tree(){
+        return ResultBean.success(operatorService.getAllMenuAndOperatorTree());
     }
     
     

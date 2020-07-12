@@ -9,15 +9,16 @@
         <result column="principal_name" jdbcType="VARCHAR" property="principalName" />
         <result column="activity_flag" jdbcType="INTEGER" property="activityFlag" />
         <result column="detail_info" jdbcType="VARCHAR" property="detailInfo" />
+        <result column="img_src" jdbcType="VARCHAR" property="imgSrc"/>
     </resultMap>
 
     <insert id="insert" keyColumn="activity_id" keyProperty="activityId" parameterType="com.ams.system.entity.ActivityInfo" useGeneratedKeys="true">
         insert into activity_info (activity_theme, start_time, 
           over_time, principal_name, activity_flag, 
-          detail_info)
+          detail_info, img_src)
         values (#{activityTheme,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, 
           #{overTime,jdbcType=TIMESTAMP}, #{principalName,jdbcType=VARCHAR}, #{activityFlag,jdbcType=INTEGER}, 
-          #{detailInfo,jdbcType=VARCHAR})
+          #{detailInfo,jdbcType=VARCHAR}, #{imgSrc,jdbcType=VARCHAR})
     </insert>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -46,42 +47,50 @@
             <if test="detailInfo != null">
                 detail_info = #{detailInfo,jdbcType=VARCHAR}
             </if>
+            <if test="imgSrc != null">
+                img_src = #{imgSrc,jdbcType=VARCHAR}
+            </if>
         </set>
         where activity_id = #{activityId,jdbcType=INTEGER}
     </update>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select activity_id, activity_theme, start_time, over_time, principal_name, activity_flag, 
-        detail_info
+        detail_info, img_src
         from activity_info
         where activity_id = #{activityId,jdbcType=INTEGER}
     </select>
 
     <select id="selectAllWithQuery" resultMap="BaseResultMap">
         select activity_id, activity_theme, start_time, over_time, principal_name, activity_flag, 
-        detail_info
+        detail_info, img_src
         from activity_info
         where 1=1
-        <if test="activityId != null">
+        <if test="activityId != null and activityId != ''">
             and activity_id = #{activityId}
         </if>
-        <if test="activityTheme != null">
+        <if test="activityTheme != null and activityTheme!= ''">
             and activity_theme = #{activityTheme}
         </if>
-        <if test="startTime != null">
-            and start_time = #{startTime }
+        <if test="startTime != null and startTime != ''">
+            and start_time = #{startTime}
         </if>
-        <if test="overTime != null">
+        <if test="overTime != null and overTime != ''">
             and over_time = #{overTime}
         </if>
-        <if test="principalName != null">
+        <if test="principalName != null and principalName != ''">
             and principal_name = #{principalName}
         </if>
-        <if test="activityFlag != null">
+        <if test="activityFlag != null and activityFlag != ''">
             and activity_flag = #{activityFlag}
         </if>
-        <if test="detailInfo != null">
+        <if test="detailInfo != null and detailInfo != ''">
             and detail_info like "%"#{detailInfo}"%"
         </if>
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select activity_id, activity_theme, start_time, over_time, principal_name, activity_flag,
+    detail_info, img_src
+    from activity_info
     </select>
 </mapper>

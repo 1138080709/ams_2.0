@@ -5,11 +5,13 @@ import com.ams.common.utils.ResultBean;
 import com.ams.common.validator.Create;
 import com.ams.common.validator.Update;
 import com.ams.system.entity.Department;
+import com.ams.system.entity.Student;
 import com.ams.system.service.DepartmentService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.validator.constraints.pl.REGON;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,11 +29,28 @@ public class DepartmentController {
     @Resource
     private DepartmentService departmentService;
     
+    @GetMapping("/index")
+    public String index() {
+        return "department/department-list";
+    }
+    
+    @GetMapping("/add")
+    public String add() {
+        return "department/department-add";
+    }
+    
     @ApiOperation("新增部门")
     @PostMapping
     @ResponseBody
     public ResultBean add(@Validated(Create.class) Department department) {
         return ResultBean.success(departmentService.add(department));
+    }
+
+    @GetMapping("/edit/{departmentId}")
+    public String edit(Model model, @PathVariable("departmentId") Integer departmentId) {
+        Department department = departmentService.getDepartmentInfo(departmentId);
+        model.addAttribute("department",department);
+        return "department/department-add";
     }
 
     @ApiOperation("编辑部门")
@@ -56,9 +75,17 @@ public class DepartmentController {
     public ResultBean getDepartmentInfo(@PathVariable("departmentId") Integer departmentId) {
         return ResultBean.success(departmentService.getDepartmentInfo(departmentId));
     }
+
+
+    @GetMapping("/member/{departmentId}")
+    public String getDepartmentMember(Model model, @PathVariable("departmentId") Integer departmentId) {
+        Department department = departmentService.getDepartmentInfo(departmentId);
+        model.addAttribute("department",department);
+        return "department/department-member";
+    }
     
     @ApiOperation("查询部门成员")
-    @GetMapping("/{departmentId}/member")
+    @GetMapping("/member/{departmentId}/list")
     @ResponseBody
     public ResultBean getDepartmentMember(@PathVariable("departmentId") Integer departmentId) {
         return ResultBean.success(departmentService.getDepartmentMember(departmentId));

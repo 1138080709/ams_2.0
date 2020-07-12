@@ -9,11 +9,13 @@ import com.ams.system.dao.StudentMapper;
 import com.ams.system.dao.UserMapper;
 import com.ams.system.entity.Student;
 import com.ams.system.entity.User;
+import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author: WuWeiquan
@@ -82,5 +84,10 @@ public class StudentService {
         if (studentDao.countByDigitsNotIncludeStudentId(digits, studentId) > 0) {
             throw new DuplicateDigitsException();
         }
+    }
+
+    public List<Student> selectAllWithQuery(int page, int limit, Student studentQuery) {
+        PageHelper.startPage(page,limit);
+        return studentDao.selectAllWithQuery(studentQuery);
     }
 }

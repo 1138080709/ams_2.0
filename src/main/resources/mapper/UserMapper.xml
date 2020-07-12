@@ -15,11 +15,41 @@
         <result column="student_id" jdbcType="INTEGER" property="studentId" />
     </resultMap>
 
+    <resultMap id="BaseResultMap1" type="com.ams.system.entity.User">
+        <id column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="salt" jdbcType="VARCHAR" property="salt" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="student_id" jdbcType="INTEGER" property="studentId" />
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.ams.system.entity.User">
+        <id column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="salt" jdbcType="VARCHAR" property="salt" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="student_id" jdbcType="INTEGER" property="studentId" />
+        <association property="student" column="student_id" select="com.ams.system.dao.StudentMapper.selectByPrimaryKey"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
         user_id, username, password, salt, status, last_login_time,
         create_time, modify_time, email, phone, student_id
     </sql>
-    
+
     <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.User">
         update user
         set username = #{username,jdbcType=VARCHAR},
@@ -51,7 +81,7 @@
         delete from user
         where user_id = #{userId,jdbcType=INTEGER}
     </delete>
-    
+
     <insert id="insert" keyColumn="user_id" keyProperty="userId" parameterType="com.ams.system.entity.User" useGeneratedKeys="true">
         insert into user (username, `password`, 
           salt, email, phone)
@@ -59,14 +89,14 @@
           #{salt,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
           #{phone,jdbcType=VARCHAR})
     </insert>
-    
-    <select id="selectJobNameByUsername" parameterType="java.lang.String" resultType="java.lang.String">
-        select role.job_name
+
+    <select id="selectRoleNameByUsername" parameterType="java.lang.String" resultType="java.lang.String">
+        select role.role_name
         from user,
         role,
-        user_job
-        where user.user_id = user_job.user_id
-        and role.job_id = user_job.job_id
+        user_role
+        where user.user_id = user_role.user_id
+        and role.role_id = user_role.role_id
         and user.username= #{username,jdbcType=VARCHAR}
     </select>
 
@@ -74,13 +104,13 @@
         select menu.perms
         from user,
         role,
-        user_job,
+        user_role,
         menu,
-        job_menu
-        where user.user_id = user_job.user_id
-        and role.job_id = user_job.job_id
-        and role.job_id = job_menu.job_id
-        and menu.menu_id = job_menu.menu_id
+        role_menu
+        where user.user_id = user_role.user_id
+        and role.role_id = user_role.role_id
+        and role.role_id = role_menu.role_id
+        and menu.menu_id = role_menu.menu_id
         and user.username= #{username,jdbcType=VARCHAR}
     </select>
 
@@ -88,42 +118,42 @@
         select operator.perms
         from user,
         role,
-        user_job,
+        user_role,
         operator,
-        job_operator
-        where user.user_id = user_job.user_id
-        and role.job_id = user_job.job_id
-        and role.job_id = job_operator.job_id
-        and operator.operator_id = job_operator.operator_id
+        role_operator
+        where user.user_id = user_role.user_id
+        and role.role_id = user_role.role_id
+        and role.role_id = role_operator.role_id
+        and operator.operator_id = role_operator.operator_id
         and user.username= #{username,jdbcType=VARCHAR}
     </select>
-    
+
     <select id="selectOneByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from user
         where username = #{username,jdbcType=VARCHAR}
     </select>
-    
+
     <update id="updateLastLoginTimeByUsername" parameterType="java.lang.String">
         update user
         set last_login_time = current_timestamp 
         where username = #{username}
     </update>
-    
+
     <update id="updatePasswordByUserId">
         update user
         set password = #{password},
         salt = #{salt}
         where user_id = #{userId}
     </update>
-    
+
     <select id="countByUsername" parameterType="java.lang.String" resultType="java.lang.Integer">
         select count(*)
         from user
         where username = #{username}
     </select>
-    
+
     <select id="countByUsernameNotIncludeUserId" resultType="java.lang.Integer">
         select count(*)
         from user
@@ -161,14 +191,14 @@
         </set>
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
-    
+
     <update id="updateStatusByUserId">
         update user 
         set 
         `status` = #{status,jdbcType=INTEGER}
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
-    
+
     <update id="setNullWithStudentId">
         update user 
         set 
@@ -176,30 +206,36 @@
         where student_id = #{studentId}
     </update>
 
-    <select id="selectAllWithQuery" resultMap="BaseResultMap">
+    <select id="selectAllWithQuery" resultMap="BaseResultMap1">
+        select user.user_id, user.username, user.`password`, user.salt, user.`status`, user.last_login_time, user.create_time,
+        user.modify_time, user.email, user.phone, user.student_id, role.role_name
+        from user,user_role,role
+        where user.user_id = user_role.user_id
+        and user_role.role_id = role.role_id
+        <if test="userId != null and userId != ''">
+            and user_id = #{userId}
+        </if>
+        <if test="username != null and username != ''">
+            and username = #{username}
+        </if>
+        <if test="status != null and status != ''">
+            and status = #{status}
+        </if>
+        <if test="email != null and email != ''">
+            and email = #{email}
+        </if>
+        <if test="phone != null and phone != ''">
+            and phone = #{phone}
+        </if>
+        <if test="studentId != null and studentId != ''">
+            and student_id = #{studentId}
+        </if>
+    </select>
+
+    <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap2">
         select user_id, username, `password`, salt, `status`, last_login_time, create_time, 
         modify_time, email, phone, student_id
         from user
-        where 1=1
-        <if test="userId != null">
-            and user_id = #{userId}
-        </if>
-        <if test="username != null">
-            and username = #{username}
-        </if>
-        <if test="status != null">
-            and status = #{status}
-        </if>
-        <if test="email != null">
-            and email = #{email}
-        </if>
-        <if test="phone!= null">
-            and phone = #{phone}
-        </if>
-        <if test="studentId != null">
-            and student_id = #{studentId}
-        </if>
-        
+        where user_id = #{userId,jdbcType=INTEGER}
     </select>
-    
 </mapper>

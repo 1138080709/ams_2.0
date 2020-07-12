@@ -57,6 +57,8 @@ public class ShiroService {
         filterChainDefinitionMap.put("/lib/**", "anon");
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/captcha", "anon");
+        filterChainDefinitionMap.put("/recentActivity", "anon");
+        filterChainDefinitionMap.put("/activity/getList", "anon");
         filterChainDefinitionMap.put("/register", "anon");
         filterChainDefinitionMap.put("/403", "anon");
         filterChainDefinitionMap.put("/404", "anon");

@@ -1,22 +1,32 @@
 package com.ams.system.entity;
 
 import com.ams.common.validator.Create;
+import com.ams.common.validator.Update;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 public class ActivityInfo implements Serializable {
+    @JsonProperty("id")
+    @NotNull(message = "活动id不能为空", groups = Update.class)
     private Integer activityId;
     
     @NotBlank(message = "活动主题不能为空", groups = Create.class)
     private String activityTheme;
 
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "活动开始时间不能为空")
     private Date startTime;
 
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "活动结束时间不能为空")
     private Date overTime;
 
     private String principalName;
@@ -24,6 +34,8 @@ public class ActivityInfo implements Serializable {
     private Integer activityFlag;
 
     private String detailInfo;
+    
+    private String imgSrc;
 
     private static final long serialVersionUID = 1L;
 
@@ -81,6 +93,14 @@ public class ActivityInfo implements Serializable {
 
     public void setDetailInfo(String detailInfo) {
         this.detailInfo = detailInfo == null ? null : detailInfo.trim();
+    }
+
+    public String getImgSrc() {
+        return imgSrc;
+    }
+
+    public void setImgSrc(String imgSrc) {
+        this.imgSrc = imgSrc;
     }
 
     @Override

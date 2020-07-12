@@ -1,19 +1,30 @@
 package com.ams.system.entity;
 
+import com.ams.common.validator.Create;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.sql.rowset.CachedRowSet;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
 
 public class MaterialFlowInfo implements Serializable {
+    @JsonProperty("id")
     private Integer materialFlowId;
 
+    @NotNull(message = "物资不能为空", groups = Create.class)
     private Integer materialId;
 
+    @NotNull(message = "信息类型不能为空", groups = Create.class)
     private Integer infoType;
 
+    @NotNull(message = "物资数量不能为空", groups = Create.class)
     private Integer number;
 
     private String purpose;
 
-    private String date;
+    private Date date;
 
     private String organizationName;
 
@@ -23,7 +34,13 @@ public class MaterialFlowInfo implements Serializable {
 
     private Integer auditorId;
 
+    private Integer auditFlag;
+
     private String remark;
+
+    private Student auditor;
+
+    private Material material;
 
     private static final long serialVersionUID = 1L;
 
@@ -67,12 +84,12 @@ public class MaterialFlowInfo implements Serializable {
         this.purpose = purpose == null ? null : purpose.trim();
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date == null ? null : date.trim();
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getOrganizationName() {
@@ -107,12 +124,36 @@ public class MaterialFlowInfo implements Serializable {
         this.auditorId = auditorId;
     }
 
+    public Integer getAuditFlag() {
+        return auditFlag;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
+    }
+
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark == null ? null : remark.trim();
+    }
+
+    public Student getAuditor() {
+        return auditor;
+    }
+
+    public void setAuditor(Student auditor) {
+        this.auditor = auditor;
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 
     @Override

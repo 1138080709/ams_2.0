@@ -2,12 +2,14 @@ package com.ams.system.entity;
 
 import com.ams.common.validator.Create;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
 
 public class Department implements Serializable {
+    @JsonProperty("id")
     private Integer departmentId;
     
     @NotBlank(message = "部门名不能为空", groups = Create.class)

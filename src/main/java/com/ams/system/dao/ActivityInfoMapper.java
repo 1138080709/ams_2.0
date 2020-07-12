@@ -33,4 +33,9 @@ public interface ActivityInfoMapper {
      * 根据条件查询活动
      */
     List<ActivityInfo> selectAllWithQuery(ActivityInfo activityInfoQuery);
+
+    /**
+     * 查询所有活动
+     */
+    List<ActivityInfo> selectAll();
 }

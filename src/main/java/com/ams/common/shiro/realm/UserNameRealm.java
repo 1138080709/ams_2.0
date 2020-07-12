@@ -44,14 +44,14 @@ public class UserNameRealm extends AuthorizingRealm {
 
         String username = user.getUsername();
 
-        Set<String> jobs = userService.selectJobNameByUsername(username);
+        Set<String> roles = userService.selectRoleNameByUsername(username);
         Set<String> perms = userService.selectPermsByUsername(username);
 
-        log.info("用户的角色：" + jobs);
+        log.info("用户的角色：" + roles);
         log.info("用户的权限：" + perms);
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        authorizationInfo.setRoles(jobs);
+        authorizationInfo.setRoles(roles);
         authorizationInfo.setStringPermissions(perms);
         return authorizationInfo;
     }

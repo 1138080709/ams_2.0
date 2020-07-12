@@ -48,4 +48,10 @@
         from user_role
         where role_id = #{roleId}
     </select>
+
+    <select id="selectRoleIdByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select role_id
+        from user_role
+        where user_id = #{userId}
+    </select>
 </mapper>

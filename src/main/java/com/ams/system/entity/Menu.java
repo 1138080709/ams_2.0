@@ -1,16 +1,21 @@
 package com.ams.system.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 public class Menu implements Serializable {
+
+    @JsonProperty("id")
     private Integer menuId;
 
     private Integer parentId;
 
+    @JsonProperty("name")
     private String menuName;
 
     private String url;
@@ -19,8 +24,10 @@ public class Menu implements Serializable {
 
     private Integer orderNum;
 
+    @JsonIgnore
     private Date createTime;
-
+    
+    @JsonIgnore
     private Date modifyTime;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

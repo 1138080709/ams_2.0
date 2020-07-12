@@ -35,4 +35,9 @@ public interface UserRoleMapper {
      * 查询角色下的所有用户Id
      */
     List<Integer> selectUserIdByRoleId(@Param("roleId") int roleId);
+
+    /**
+     * 查询用户的所有角色
+     */
+    Integer selectRoleIdByUserId(@Param("userId") Integer userId);
 }

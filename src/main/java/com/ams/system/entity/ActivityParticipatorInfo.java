@@ -1,18 +1,31 @@
 package com.ams.system.entity;
 
+import com.ams.common.validator.Update;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 public class ActivityParticipatorInfo implements Serializable {
+    @JsonProperty("id")
+    @NotBlank(message = "参与者id不能为空", groups = Update.class)
     private Integer participatorId;
 
+    @JsonProperty("name")
+    @NotBlank(message = "参与者姓名不能为空")
     private String participatorName;
 
+    @JsonProperty("digits")
+    @NotBlank(message = "参与者学号不能为空")
     private String participatorDigits;
 
+    @JsonProperty("college")
     private String participatorCollege;
 
+    @JsonProperty("class")
     private String participatorClass;
 
+    @NotBlank(message = "参与的活动Id不能为空")
     private String activityId;
 
     private static final long serialVersionUID = 1L;

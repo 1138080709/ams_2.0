@@ -1,15 +1,23 @@
 package com.ams.system.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.format.annotation.NumberFormat;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 public class Material implements Serializable {
+    @JsonProperty("id")
     private Integer materialId;
 
+    @NotBlank(message = "物资名不能为空")
     private String materialName;
-
+    
+    @NotNull(message = "物资数量不能为空")
     private Integer totalNumber;
-
+    
     private Integer remainNumber;
 
     private String remark;

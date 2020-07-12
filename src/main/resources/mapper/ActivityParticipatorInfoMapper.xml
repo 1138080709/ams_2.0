@@ -9,27 +9,6 @@
         <result column="participator_class" jdbcType="VARCHAR" property="participatorClass" />
         <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
     </resultMap>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-        delete from activity_participator_info
-        where participator_id = #{participatorId,jdbcType=INTEGER}
-    </delete>
-    <insert id="insert" parameterType="com.ams.system.entity.ActivityParticipatorInfo">
-        insert into activity_participator_info (participator_id, participator_name, 
-          participator_digits, participator_college, 
-          participator_class, activity_id)
-        values (#{participatorId,jdbcType=INTEGER}, #{participatorName,jdbcType=VARCHAR}, 
-          #{participatorDigits,jdbcType=VARCHAR}, #{participatorCollege,jdbcType=VARCHAR}, 
-          #{participatorClass,jdbcType=VARCHAR}, #{activityId,jdbcType=VARCHAR})
-    </insert>
-    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.ActivityParticipatorInfo">
-        update activity_participator_info
-        set participator_name = #{participatorName,jdbcType=VARCHAR},
-          participator_digits = #{participatorDigits,jdbcType=VARCHAR},
-          participator_college = #{participatorCollege,jdbcType=VARCHAR},
-          participator_class = #{participatorClass,jdbcType=VARCHAR},
-          activity_id = #{activityId,jdbcType=VARCHAR}
-        where participator_id = #{participatorId,jdbcType=INTEGER}
-    </update>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select participator_id, participator_name, participator_digits, participator_college, 
         participator_class, activity_id
@@ -46,4 +25,47 @@
         delete from activity_participator_info
         where activity_id = #{activityId,jdbcType=INTEGER}
     </delete>
+
+    <insert id="insert" keyColumn="participator_id" keyProperty="participatorId" parameterType="com.ams.system.entity.ActivityParticipatorInfo" useGeneratedKeys="true">
+        insert into activity_participator_info (participator_name, 
+          participator_digits, participator_college, 
+          participator_class, activity_id)
+        values (#{participatorName,jdbcType=VARCHAR}, #{participatorDigits,jdbcType=VARCHAR},
+           #{participatorCollege,jdbcType=VARCHAR}, #{participatorClass,jdbcType=VARCHAR}, 
+           #{activityId,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.ActivityParticipatorInfo">
+        update activity_participator_info
+        <set>
+            <if test="participatorName != null and participatorName != ''">
+                participator_name = #{participatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="participatorDigits != null and participatorDigits != ''">
+                participator_digits = #{participatorDigits,jdbcType=VARCHAR},
+            </if>
+            <if test="participatorCollege != null and participatorCollege != ''">
+                participator_college = #{participatorCollege,jdbcType=VARCHAR},
+            </if>
+            <if test="participatorClass != null and participatorClass != ''">
+                participator_class = #{participatorClass,jdbcType=VARCHAR},
+            </if>
+            <if test="activityId != null and activityId != ''">
+                activity_id = #{activityId,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where participator_id = #{participatorId,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from activity_participator_info
+        where participator_id = #{participatorId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectAllByActivityId" resultMap="BaseResultMap" parameterType="java.lang.Integer"> 
+        select participator_id, participator_name, participator_digits, participator_college, 
+        participator_class, activity_id
+        from activity_participator_info
+        where activity_id = #{activityId,jdbcType=INTEGER}
+    </select>
 </mapper>

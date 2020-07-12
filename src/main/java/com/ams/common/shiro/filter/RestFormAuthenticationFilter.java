@@ -26,7 +26,6 @@ public class RestFormAuthenticationFilter extends FormAuthenticationFilter {
         String requestURI = this.getPathWithinApplication(request);
 
         String[] strings = path.split("==");
-
         if (strings.length <= 1) {
             // 普通的URL，正常处理
             flag = this.pathsMatch(strings[0], requestURI);

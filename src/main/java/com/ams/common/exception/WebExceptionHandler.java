@@ -10,17 +10,13 @@ import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.Result;
+
 
 /**
  * 全局异常处理
@@ -41,7 +37,7 @@ public class WebExceptionHandler {
 
     @ExceptionHandler
     @ResponseBody
-    public ResultBean noHandlerFound (NoHandlerFoundException e) {
+    public ResultBean noHandlerFound(NoHandlerFoundException e) {
         if (log.isDebugEnabled()) {
             log.debug("请求的地址不存在", e);
         }
@@ -77,6 +73,15 @@ public class WebExceptionHandler {
 
     @ExceptionHandler
     @ResponseBody
+    public ResultBean oldPasswordCheck(OldPasswordCheckException e) {
+        if (log.isDebugEnabled()) {
+            log.debug("原密码错误");
+        }
+        return ResultBean.error("原密码错误");
+    }
+
+    @ExceptionHandler
+    @ResponseBody
     public ResultBean excessiveAttempts(ExcessiveAttemptsException e) {
         if (log.isDebugEnabled()) {
             log.debug("登录失败次数过多");
@@ -105,16 +110,16 @@ public class WebExceptionHandler {
     @ExceptionHandler
     @ResponseBody
     public ResultBean duplicateName(DuplicateNameException e) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("用户名已存在");
         }
         return ResultBean.error("用户名已存在");
     }
-    
+
     @ExceptionHandler
     @ResponseBody
     public ResultBean duplicateDigits(DuplicateDigitsException e) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("学号已存在");
         }
         return ResultBean.error("学号已存在");
@@ -123,25 +128,66 @@ public class WebExceptionHandler {
     @ExceptionHandler
     @ResponseBody
     public ResultBean noFillStudentInfo(NoFillStudentInfoException e) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("该用户还未完善学生信息");
         }
         return ResultBean.error("该用户还未完善学生信息，请尽快填写");
     }
-    
+
     @ExceptionHandler
     @ResponseBody
     public ResultBean DuplicateFillStudentInfo(DuplicateFillStudentInfoException e) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("重复完善学生信息");
         }
         return ResultBean.error("重复完善学生信息");
     }
-    
+
+    @ExceptionHandler
+    @ResponseBody
+    public ResultBean UnSupportFileFormat(UnSupportFileFormatException e) {
+        if (log.isDebugEnabled()) {
+            log.debug("不支持当前文件格式");
+        }
+        return ResultBean.error("不支持当前文件格式");
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    public ResultBean FileUpload(FileUploadException e) {
+        if (log.isDebugEnabled()) {
+            log.debug("文件上传出错");
+        }
+        return ResultBean.error("文件上传出错");
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    public ResultBean FileDownload(FileDownloadException e) {
+        if (log.isDebugEnabled()) {
+            log.debug("文件下载出错");
+        }
+        return ResultBean.error("文件下载出错");
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    public ResultBean FileDelete(FileDeleteException e) {
+        if (log.isDebugEnabled()) {
+            if (e.getMessage() == null || "".equals(e.getMessage())) {
+                log.debug("文件删除出错");
+            } else {
+                log.debug(e.getMessage());
+                return ResultBean.error(e.getMessage());
+            }
+        }
+        return ResultBean.error("文件删除出错");
+    }
+
     @ExceptionHandler
     @ResponseBody
     public ResultBean illegalArgument(IllegalArgumentException e) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(e.getMessage(), e);
         }
         return ResultBean.error(e.getMessage());

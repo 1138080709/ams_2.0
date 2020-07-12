@@ -1,12 +1,14 @@
 package com.ams.system.service;
 
 import com.ams.common.exception.DuplicateNameException;
+import com.ams.common.exception.OldPasswordCheckException;
 import com.ams.common.utils.TreeUtil;
 import com.ams.system.dao.UserRoleMapper;
 import com.ams.system.dao.UserMapper;
 import com.ams.system.entity.Menu;
 import com.ams.system.entity.User;
 import com.github.pagehelper.PageHelper;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
@@ -30,21 +32,21 @@ public class UserService {
     private MenuService menuService;
 
     @Resource
-    private UserRoleMapper userJobDao;
+    private UserRoleMapper userRoleDao;
 
     @Resource
     private SessionDAO sessionDAO;
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
-    
+
     /**
      * 获取用户所拥有的职位
      *
      * @param username
      * @return
      */
-    public Set<String> selectJobNameByUsername(String username) {
-        return userDao.selectJobNameByUsername(username);
+    public Set<String> selectRoleNameByUsername(String username) {
+        return userDao.selectRoleNameByUsername(username);
     }
 
     /**
@@ -76,10 +78,17 @@ public class UserService {
         userDao.deleteByPrimaryKey(userId);
     }
 
-    public void updatePasswordByUserId(int userId, String password) {
-        String salt = generateSalt();
-        String encryptPassword = new Md5Hash(password, salt).toString();
-        userDao.updatePasswordByUserId(userId, encryptPassword, salt);
+    public void updatePassword(String oldPassword, String newPassword) {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        String oldSalt = user.getSalt();
+        String encryptOldPassword = new Md5Hash(oldPassword, oldSalt).toString();
+        if(!encryptOldPassword.equals(user.getPassword())) {
+            throw new OldPasswordCheckException();
+        }
+                
+        String newSalt = generateSalt();
+        String encryptNewPassword = new Md5Hash(newPassword, newSalt).toString();
+        userDao.updatePasswordByUserId(user.getUserId(), encryptNewPassword, newSalt);
     }
 
     public void resetPasswordByUserId(int userId) {
@@ -93,7 +102,7 @@ public class UserService {
     }
 
     @Transactional
-    public Integer add(User user, Integer[] jobIds) {
+    public Integer add(User user, Integer[] roleIds) {
         checkUserNameExistOnCreate(user.getUsername());
 
         String salt = generateSalt();
@@ -103,27 +112,27 @@ public class UserService {
         user.setPassword(encryptPassword);
         userDao.insert(user);
 
-        grantJob(user.getUserId(), jobIds);
+        grantRole(user.getUserId(), roleIds);
 
         return user.getUserId();
 
     }
 
     @Transactional
-    public void edit(User user, Integer[] jobIds) {
+    public void edit(User user, Integer[] roleIds) {
         checkUserNameExistOnUpdate(user);
         userDao.updateByPrimaryKeySelective(user);
     }
 
     @Transactional
-    public void grantJob(Integer userId, Integer[] jobIds) {
-        if (jobIds == null || jobIds.length == 0) {
-            throw new IllegalArgumentException("赋予的职位数组不能为空.");
+    public void grantRole(Integer userId, Integer[] roleIds) {
+        if (roleIds == null || roleIds.length == 0) {
+            throw new IllegalArgumentException("赋予的角色数组不能为空.");
         }
 
         // 清空原有的职位，赋予新职位
-        userJobDao.deleteUserRoleByUserId(userId);
-        userJobDao.insertList(userId, jobIds);
+        userRoleDao.deleteUserRoleByUserId(userId);
+        userRoleDao.insertList(userId, roleIds);
     }
 
     /**
@@ -184,5 +193,13 @@ public class UserService {
     public List<User> selectAllWithQuery(int page, int limit, User userQuery) {
         PageHelper.startPage(page, limit);
         return userDao.selectAllWithQuery(userQuery);
+    }
+
+    public User selectOne(Integer userId) {
+        return userDao.selectByPrimaryKey(userId);
+    }
+
+    public Integer selectRoleIdByUserId(Integer userId) {
+        return userRoleDao.selectRoleIdByUserId(userId);
     }
 }

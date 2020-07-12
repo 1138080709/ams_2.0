@@ -11,18 +11,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
     
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").
-                        allowedOrigins("*").    //允许跨域的域名
-                        allowedMethods("*").    //允许的方法
-                        allowedHeaders("*").    //允许的请求头
-                        allowCredentials(true). //带上cookie信息
-                        exposedHeaders(HttpHeaders.SET_COOKIE).maxAge(3600L);   //3600秒内不需要再发送预检验请求，可以缓存该结果 
-            }
-        };
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**").
+                allowedOrigins("*").    //允许跨域的域名
+                allowedMethods("*").    //允许的方法
+                allowedHeaders("*").    //允许的请求头
+                allowCredentials(true). //带上cookie信息
+                exposedHeaders(HttpHeaders.SET_COOKIE).maxAge(3600L);   //3600秒内不需要再发送预检验请求，可以缓存该结果 
     }
     
 }

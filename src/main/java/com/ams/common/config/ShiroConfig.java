@@ -1,5 +1,6 @@
 package com.ams.common.config;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import com.ams.common.shiro.AmsPropcertis;
 import com.ams.common.shiro.EnhanceModularRealmAuthenticator;
 import com.ams.common.shiro.RestShiroFilterFactoryBean;
@@ -43,6 +44,9 @@ public class ShiroConfig {
 
     @Value("${spring.redis.port}")
     private Integer redisPort;
+    
+    @Value("${spring.redis.password}")
+    private String password;
 
     @Bean
     public RestShiroFilterFactoryBean restShiroFilterFactoryBean(SecurityManager securityManager) {
@@ -69,7 +73,7 @@ public class ShiroConfig {
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setSessionManager(sessionManager());
-        securityManager.setRealm(userNameRealm());
+        securityManager.setRealms(Arrays.asList(userNameRealm()));
         // 可扩展多Realm登录校验
         ModularRealmAuthenticator authenticator = new EnhanceModularRealmAuthenticator(); //处理多Realm抛出的异常
         securityManager.setAuthenticator(authenticator);
@@ -110,6 +114,7 @@ public class ShiroConfig {
     public RedisManager redisManager() {
         RedisManager redisManager = new RedisManager();
         redisManager.setHost(redisHost + ":" + redisPort);
+        redisManager.setPassword(password);
         return redisManager;
     }
 
@@ -138,5 +143,10 @@ public class ShiroConfig {
         sessionManager.setSessionDAO(redisSessionDAO());
         sessionManager.setSessionIdUrlRewritingEnabled(false);
         return sessionManager;
+    }
+    
+    @Bean
+    public ShiroDialect shiroDialect() {
+        return new ShiroDialect();
     }
 }

@@ -1,6 +1,7 @@
 package com.ams.system.entity;
 
 import com.ams.common.validator.Create;
+import com.ams.common.validator.Update;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.validation.constraints.Email;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class User implements Serializable {
+    @NotBlank(message = "id不能为空", groups = Update.class)
     private Integer userId;
 
     @NotBlank(message = "用户名不能为空")
@@ -36,6 +38,10 @@ public class User implements Serializable {
     private String phone;
 
     private Integer studentId;
+
+    private String roleName;
+    
+    private Student student;
 
     private static final long serialVersionUID = -3200103254689137288L;
 
@@ -125,6 +131,22 @@ public class User implements Serializable {
 
     public void setStudentId(Integer studentId) {
         this.studentId = studentId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
     @Override

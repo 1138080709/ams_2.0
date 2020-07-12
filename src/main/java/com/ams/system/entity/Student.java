@@ -1,12 +1,14 @@
 package com.ams.system.entity;
 
 import com.ams.common.validator.Create;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 public class Student implements Serializable {
+    @JsonProperty("id")
     private Integer studentId;
     
     @NotBlank(message = "姓名不能为空", groups = Create.class)

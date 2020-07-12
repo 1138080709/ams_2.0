@@ -6,6 +6,7 @@ import com.ams.system.dao.RoleMenuMapper;
 import com.ams.system.dao.RoleOperatorMapper;
 import com.ams.system.dao.UserRoleMapper;
 import com.ams.system.entity.Role;
+import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,5 +99,18 @@ public class RoleService {
         }
         return operatorIds;
         
+    }
+
+    public List<Role> selectAll() {
+        return roleDao.selectAll();
+    }
+
+    public List<Role> selectAllWithQuery(int page, int limit, Role roleQuery) {
+        PageHelper.startPage(page,limit);
+        return roleDao.selectAllWithQuery(roleQuery);
+    }
+
+    public Role selectOneById(Integer roleId) {
+        return roleDao.selectByPrimaryKey(roleId);
     }
 }

@@ -1,46 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ams.system.dao.MaterialMapper">
-  <resultMap id="BaseResultMap" type="com.ams.system.entity.Material">
-    <id column="material_id" jdbcType="INTEGER" property="materialId" />
-    <result column="material_name" jdbcType="VARCHAR" property="materialName" />
-    <result column="total_number" jdbcType="INTEGER" property="totalNumber" />
-    <result column="remain_number" jdbcType="INTEGER" property="remainNumber" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from material
-    where material_id = #{materialId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.ams.system.entity.Material">
-    insert into material (material_id, material_name, total_number, 
-      remain_number, remark, create_time, 
-      modify_time)
-    values (#{materialId,jdbcType=INTEGER}, #{materialName,jdbcType=VARCHAR}, #{totalNumber,jdbcType=INTEGER}, 
-      #{remainNumber,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{modifyTime,jdbcType=TIMESTAMP})
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.Material">
-    update material
-    set material_name = #{materialName,jdbcType=VARCHAR},
-      total_number = #{totalNumber,jdbcType=INTEGER},
-      remain_number = #{remainNumber,jdbcType=INTEGER},
-      remark = #{remark,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      modify_time = #{modifyTime,jdbcType=TIMESTAMP}
-    where material_id = #{materialId,jdbcType=INTEGER}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select material_id, material_name, total_number, remain_number, remark, create_time, 
-    modify_time
-    from material
-    where material_id = #{materialId,jdbcType=INTEGER}
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select material_id, material_name, total_number, remain_number, remark, create_time, 
-    modify_time
-    from material
-  </select>
+    <resultMap id="BaseResultMap" type="com.ams.system.entity.Material">
+        <id column="material_id" jdbcType="INTEGER" property="materialId" />
+        <result column="material_name" jdbcType="VARCHAR" property="materialName" />
+        <result column="total_number" jdbcType="INTEGER" property="totalNumber" />
+        <result column="remain_number" jdbcType="INTEGER" property="remainNumber" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from material
+        where material_id = #{materialId,jdbcType=INTEGER}
+    </delete>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select material_id, material_name, total_number, remain_number, remark, create_time, 
+        modify_time
+        from material
+        where material_id = #{materialId,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select material_id, material_name, total_number, remain_number, remark, create_time, 
+        modify_time
+        from material
+    </select>
+
+   <select id="selectAllWithQuery" parameterType="com.ams.system.entity.Material" resultMap="BaseResultMap">
+        select material_id, material_name, total_number, remain_number, remark, create_time, 
+        modify_time
+        from material
+        where 1=1
+        <if test="materialName != null and materialName != ''">
+            and material_name = #{materialName}
+        </if>
+        <if test="totalNumber != null and totalNumber != ''">
+            and total_number = #{totalNumber}
+        </if>
+        <if test="remainNumber != null and remainNumber != ''">
+         and remain_number = #{remainNumber}
+        </if>
+        <if test="remark != null and remark != ''">
+         and remark = #{remark}
+        </if>
+    </select>
+
+    <insert id="insert" keyColumn="material_id" keyProperty="materialId" parameterType="com.ams.system.entity.Material" useGeneratedKeys="true">
+        insert into material ( material_name, total_number, 
+            remain_number, remark)
+        values ( #{materialName,jdbcType=VARCHAR}, #{totalNumber,jdbcType=INTEGER}, 
+            #{remainNumber,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.ams.system.entity.Material">
+        update material
+        <set>
+            <if test="materialName != null and materialName != ''">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="totalNumber != null and totalNumber != ''">
+                total_number = #{totalNumber,jdbcType=INTEGER},
+            </if>
+            <if test="remainNumber != null and remainNumber != ''">
+                remain_number = #{remainNumber,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where material_id = #{materialId,jdbcType=INTEGER}
+    </update>
 </mapper>
