@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>学生</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/lib/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+    <link rel="stylesheet" th:href="@{/lib/layui/extend/formSelects-v4.css}"/>
+</head>
+
+<body>
+<div class="z-body animated fadeIn">
+    <form action="" method="post" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label for="name" class="layui-form-label">
+                姓名
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="name" name="name"
+                       lay-verify="required" lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="digits" class="layui-form-label">
+                学号
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="digits" name="digits"
+                       lay-verify="required|number" lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="grade" class="layui-form-label">
+                年级
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="grade" name="grade"
+                       lay-verify="required|number" lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="college" class="layui-form-label">
+                学院
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="college" name="college"
+                       lay-verify="required" lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="major" class="layui-form-label">
+                专业
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="major" name="major"
+                       lay-verify="required" lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="belongClass" class="layui-form-label">
+                班级
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="belongClass" name="belongClass"
+                       lay-verify="required " lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="phone" class="layui-form-label">
+                手机
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="phone" name="phone"
+                       lay-verify="required|phone" lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="email" class="layui-form-label">
+                邮箱
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="email" name="email"
+                       lay-verify="required|email" lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-left: 0;text-align: center;">
+                <button th:text="提交" class="layui-btn layui-btn-normal btn-w100" lay-submit=""
+                        data-th-lay-filter="submit"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/lib/layui/layui.js}"></script>
+<script th:src="@{/js/common.js}"></script>
+<script>
+    layui.config({
+        base: '/lib/layui/extend/'
+    }).extend({
+        formSelects: 'formSelects-v4'
+    }).use(['form', 'layer', 'formSelects'], function () {
+        $ = layui.jquery;
+        var form = layui.form,
+            layer = layui.layer,
+            formSelects = layui.formSelects;
+
+        // 监听提交
+        form.on('submit(submit)', function (form) {
+            form.field.method = 'POST';
+            form.field.role = formSelects.value('role-select', 'val');
+            $.post('/student/fill', form.field, function (result) {
+                handlerResult(result, addDone)
+            });
+            return false;
+        });
+        
+
+        function addDone(data) {
+            layer.msg("提交成功", {icon: 6});
+        }
+    });
+</script>
+</body>
+
+</html>

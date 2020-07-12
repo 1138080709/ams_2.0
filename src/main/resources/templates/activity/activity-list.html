@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>社团小助手</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/z-font.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+</head>
+
+<body>
+
+<!--    <div class="page-loading">-->
+<!--      <div class="rubik-loader"></div>-->
+<!--    </div>-->
+
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a>活动管理</a>
+        <a>
+          <cite>活动列表</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-primary layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:38px">ဂ</i></a>
+</div>
+
+<div class="z-body animated fadeIn">
+    <form class="layui-form zadmin-search-area input">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label for="activityTheme" class="layui-form-label">活动主题</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="activityTheme" autocomplete="off"
+                           id="activityTheme" class="layui-input">
+                </div>
+
+                <button lay-submit="" lay-filter="search" class="layui-btn layui-btn-sm layui-btn-primary table-action">
+                    <i class="zadmin-icon zadmin-icon-search"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+    <table class="layui-hide" id="activity-table"></table>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common.js}"></script>
+<script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+<script type="text/html" id="toolbar">
+    <shiro:hasPermission name="activity:add">
+        <div class="layui-inline" lay-event="add" title="添加">
+            <i class="layui-icon">&#xe654;</i>
+        </div>
+    </shiro:hasPermission>
+    <!--      <shiro:hasPermission name="user:delete">-->
+    <!--        <div class="layui-inline" lay-event="del" title="批量删除">-->
+    <!--          <i class="layui-icon">&#xe640;</i>-->
+    <!--        </div>-->
+    <!--      </shiro:hasPermission>-->
+</script>
+<script type="text/html" id="statusTpl">
+    {{# if (d.activityFlag == 0) { }}
+        未开始
+    {{# } else if (d.activityFlag == 1) { }}
+        正在进行
+    {{# } else if (d.activityFlag == 2) { }}
+        已结束
+    {{# } }}
+</script>
+<script type="text/html" id="column-toolbar">
+    <shiro:hasPermission name="activity:update">
+        <a lay-event="edit">
+            <i class="zadmin-icon zadmin-icon-edit-square zadmin-oper-area zadmin-blue" title="编辑"></i>
+        </a>
+    </shiro:hasPermission>
+    <shiro:hasPermission name="activity:delete">
+        <a lay-event="del">
+            <i class="zadmin-icon zadmin-icon-delete zadmin-oper-area zadmin-red" title="删除"></i>
+        </a>
+    </shiro:hasPermission>
+    <shiro:lacksPermission name="activity:update,activity:delete">
+        <i class="zadmin-icon zadmin-icon-wuquanxian zadmin-oper-area zadmin-red"></i>无权限
+    </shiro:lacksPermission>
+</script> 
+<script type="text/javascript">
+    layui.config({
+        base: '/lib/layui/extend/'
+    }).use(['table', 'form', 'element', 'tablePlug'], function () {
+        var table = layui.table;
+        var $ = layui.$;
+        var form = layui.form;
+        var tablePlug = layui.tablePlug;
+
+        tablePlug.smartReload.enable(true);
+
+        table.render({
+            elem: '#activity-table'
+            , url: '/activity/list'
+            , page: {
+                theme: '#1E9FFF'
+            }
+            , toolbar: '#toolbar'
+            , defaultToolbar: ['filter', 'exports', 'print']
+            , title: '活动信息表'
+            , smartReloadModel: true
+            , cols: [
+                [
+                    {type: 'numbers', title: '序号', align: 'center', width: "3%"}
+                    , {field: 'id', title: 'ID', align: 'center', width: "4%"}
+                    , {field: 'activityTheme', title: '活动主题', event: 'apply', align: 'center', width: "14%"}
+                    , {field: 'detailInfo', title: '活动详细信息', align: 'center', width: "22%"}
+                    , {field: 'startTime', title: '开始时间', align: 'center', width: "14%"}
+                    , {field: 'overTime', title: '结束时间', align: 'center', width: "14%"}
+                    , {field: 'principalName', title: '负责人', align: 'center', width: "7%"}
+                    , {field: 'status', title: '活动状态', templet: "#statusTpl", align: 'center', width: "7%"}
+                    , {title: '操作', align: 'center', toolbar: '#column-toolbar', width: "15%"}
+                ]
+            ]
+            , done: function (res, curr, count) {
+                $('table').width("100%")
+            }
+        });
+
+        // 工具条点击事件
+        table.on('toolbar', function (obj) {
+            var data = obj.data;
+            var event = obj.event;
+
+            if (event === 'add') {
+                add();
+            } else if (event === 'del') {
+                delAll(obj);
+            }
+        });
+
+        // 操作栏点击事件
+        table.on('tool', function (obj) {
+            var data = obj.data;
+            var event = obj.event;
+            if (event === 'edit') {
+                edit(data.id);
+            } else if (event === 'del') {
+                del(data.id);
+            } else if (event === 'apply') {
+                applyInfo(data.id);
+            }
+        });
+
+        form.on('submit(search)', function (form) {
+            table.reload('activity-table', {
+                where: form.field
+            });
+            return false;
+        });
+
+        function add() {
+            layer.open({
+                content: '/activity/add',
+                title: '新增活动',
+                area: ['40%', '65%'],
+                type: 2,
+                maxmin: true,
+                shadeClose: true,
+                end: function () {
+                    table.reload('activity-table');
+                }
+            });
+        }
+
+        function edit(id) {
+            layer.open({
+                content: '/activity/edit/' + id,
+                title: '编辑活动',
+                area: ['40%', '65%'],
+                type: 2,
+                maxmin: true,
+                shadeClose: true,
+                end: function () {
+                    table.reload('activity-table');
+                }
+            });
+        }
+
+        function applyInfo(id) {
+            layer.open({
+                content: '/activity/apply/' + id,
+                title: '已报名成员',
+                area: ['50%', '60%'],
+                type: 2,
+                maxmin: true,
+                shadeClose: true,
+                end: function () {
+                    table.reload('activity-table');
+                }
+            })
+        }
+
+        function del(id) {
+            layer.confirm("确定删除该活动吗?", {icon: 3, title: '提示'},
+                function (index) { // 确定回调
+                    $.post('/activity/' + id, {_method: "DELETE"}, function (data) {
+                        layer.close(index);
+                        handlerResult(data, deleteDone);
+                    });
+                }, function (index) { // 取消回调
+                    layer.close(index);
+                });
+        }
+
+        function delAll(obj) {
+            alert('暂未实现');
+        }
+
+        function deleteDone(data) {
+            parent.layer.msg("删除成功", {icon: 6});
+            table.reload('activity-table');
+        }
+    });
+</script>
+</body>
+</html>

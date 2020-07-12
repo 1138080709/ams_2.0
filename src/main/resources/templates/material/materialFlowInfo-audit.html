@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>社团小助手</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/z-font.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+</head>
+
+<body>
+
+<!--    <div class="page-loading">-->
+<!--      <div class="rubik-loader"></div>-->
+<!--    </div>-->
+
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a>财务管理</a>
+        <a>
+          <cite>物资流动审核列表</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-primary layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:38px">ဂ</i></a>
+</div>
+
+<div class="z-body animated fadeIn">
+    <form class="layui-form zadmin-search-area input">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label for="remark" class="layui-form-label">描述</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="remark" autocomplete="off"
+                           id="remark" class="layui-input">
+                </div>
+
+                <label for="infoType" class="layui-form-label">类型</label>
+                <div class="layui-input-inline">
+                    <select name="infoType" id="infoType">
+                        <option value="">请选择</option>
+                        <option value="0">支出</option>
+                        <option value="1">收入</option>
+                    </select>
+                </div>
+
+                <button lay-submit="" lay-filter="search" class="layui-btn layui-btn-sm layui-btn-primary table-action">
+                    <i class="zadmin-icon zadmin-icon-search"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+    <table class="layui-hide" id="materialFlowInfo-audit-table"></table>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common.js}"></script>
+<script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+<script type="text/html" id="typeTpl">
+    {{# if (d.infoType == 0) { }}
+    出借
+    {{# } else if (d.infoType == 1) { }}
+    归还
+    {{# } }}
+</script>
+<script type="text/html" id="materialTpl">
+    {{# if (d.material == null) { }}
+
+    {{# } else { }}
+    <div>{{d.material.materialName}}</div>
+    {{# } }}
+</script>
+<script type="text/html" id="auditorTpl">
+    {{# if (d.auditor == null) { }}
+
+    {{# } else { }}
+    <div>{{d.auditor.name}}</div>
+    {{# } }}
+</script>
+<script type="text/html" id="auditTpl">
+    {{# if (d.auditFlag == 0) { }}
+    未审核
+    {{# } else if (d.auditFlag == 1) { }}
+    已通过
+    {{# } else if (d.auditFlag == 2) { }}
+    未通过
+    {{# } }}
+</script>
+
+<script type="text/html" id="column-toolbar">
+    <shiro:hasPermission name="materialFlowInfo:pass">
+        <a lay-event="pass">
+            <i class="layui-icon layui-icon-ok-circle zadmin-oper-area zadmin-blue" title="通过"></i>
+        </a>
+    </shiro:hasPermission>
+    <shiro:hasPermission name="materialFlowInfo:unPass">
+        <a lay-event="unPass">
+            <i class="layui-icon layui-icon-close-fill zadmin-oper-area zadmin-red" title="未通过"></i>
+        </a>
+    </shiro:hasPermission>
+    <shiro:lacksPermission name="materialFlowInfo:pass,materialFlowInfo:unPass">
+        <i class="zadmin-icon zadmin-icon-wuquanxian zadmin-oper-area zadmin-red"></i>无权限
+    </shiro:lacksPermission>
+</script>
+<script type="text/javascript">
+    layui.config({
+        base: '/lib/layui/extend/'
+    }).use(['table', 'form', 'element', 'tablePlug'], function () {
+        var table = layui.table;
+        var $ = layui.$;
+        var form = layui.form;
+        var tablePlug = layui.tablePlug;
+
+        tablePlug.smartReload.enable(true);
+
+        table.render({
+            elem: '#materialFlowInfo-audit-table'
+            , url: '/finance/material/flow/audit/list'
+            , page: {
+                theme: '#1E9FFF'
+            }
+            , title: '待审核物资流动信息表'
+            , smartReloadModel: true
+            , cols: [
+                [
+                    {type: 'numbers', title: '序号', align: 'center', width: "5%"}
+                    , {field: 'id', title: 'ID', align: 'center', width: "5%"}
+                    , {field: 'infoType', title: '类型', templet: "#typeTpl", align: 'center', width: "5%"}
+                    , {field: 'material', title: '物资名', templet: '#materialTpl', align: 'center', width: "12%"}
+                    , {field: 'number', title: '数量', align: 'center', width: "5%"}
+                    , {field: 'organizationName', title: '借方信息', event: 'debtor', align: 'center', width: "8%"}
+                    , {field: 'purpose', title: '用途', align: 'center', width: "15%"}
+                    , {field: 'date', title: '日期', align: 'center', width: "15%"}
+                    , {field: 'auditor', title: '审核人', templet: '#auditorTpl', event:'auditorInfo', align: 'center', width: "8%"}
+                    , {field: 'auditFlag', title: '审核状态', templet: "#auditTpl", align: 'center', width: "8%"}
+                    , {title: '操作', align: 'center', toolbar: '#column-toolbar', width: "14%"}
+                ]
+            ]
+            , done: function (res, curr, count) {
+                $('table').width("100%")
+            }
+        });
+
+        // 操作栏点击事件
+        table.on('tool', function (obj) {
+            var data = obj.data;
+            var event = obj.event;
+            var auditorId = [[${auditorId}]];
+            if (event === 'pass') {
+                // console.log(data.id);
+                pass(data,auditorId);
+            } else if (event === 'unPass') {
+                unPass(data,auditorId);
+            } else if (event === 'debtor') {
+                debtor(data);
+            } else if(event === 'auditorInfo'){
+                if(data.auditor != null) {
+                    auditorInfo(data.auditor);
+                }
+            }
+        });
+
+        form.on('submit(search)', function (form) {
+            table.reload('materialFlowInfo-audit-table', {
+                where: form.field
+            });
+            return false;
+        });
+        
+        function pass(obj,auditorId) {
+            console.log(auditorId);
+            $.ajax({
+                type: 'put',
+                url: '/finance//material/flow/audit',
+                data: {
+                    'materialFlowId': obj.id,
+                    'materialId':obj.materialId,
+                    'number': obj.number,
+                    'infoType': obj.infoType,
+                    'auditorId':auditorId,
+                    'auditFlag':1
+                },
+                success: function () {
+                    layer.msg("审核通过", {icon: 6});
+                },
+                error: function () {
+                    layer.alert('审核出现异常');
+                },
+                async: true
+            });
+        }
+
+        function unPass(obj,auditorId) {
+            $.ajax({
+                type: 'put',
+                url: '/finance/material/flow/audit',
+                data: {
+                    'materialFlowId': obj.id,
+                    'materialId':obj.materialId,
+                    'number': obj.number,
+                    'infoType': obj.infoType,
+                    'auditorId':auditorId,
+                    'auditFlag':2
+                },
+                success: function () {
+                    layer.msg("审核未通过", {icon: 6});
+                },
+                error: function (r) {
+                    layer.alert('审核出现异常');
+                },
+                async: true
+            });
+        }
+        
+        function debtor(obj) {
+            layer.alert(JSON.stringify(obj), {
+                title: '借方信息',
+                content: '<p>组织名称: ' + obj.organizationName + '</p>'
+                    + '<p>负责人 : ' + obj.principalName + '</p>'
+                    + '<p>联系方式: ' + obj.principalPhone + '</p>'
+            });
+        }
+
+        function auditorInfo(obj) {
+            layer.alert(JSON.stringify(obj), {
+                title: '审核人信息',
+                content: '<p>姓名: ' + obj.name + '</p>'
+                    + '<p>学号 : ' + obj.digits + '</p>'
+                    + '<p>学院: ' + obj.college + '</p>'
+                    + '<p>专业班级: ' + obj.belongClass + '</p>'
+                    + '<p>手机号码: ' + obj.phone + '</p>'
+            });
+        }
+    }); 
+    
+</script>
+</body>
+</html>

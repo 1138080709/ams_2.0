@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>社团小助手</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/lib/layui/extend/mouseRightMenu/mouseRightMenu.css}"/>
+
+</head>
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+          <a><cite>文件管理</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-primary layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:38px">ဂ</i>
+    </a>
+</div>
+
+<div style="height: auto;padding: 20px;">
+    <div id='checkImgWindow' class="fileManagerParent"></div>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/layui/layui.js}"></script>
+<script type="text/javascript">
+    layui.config({
+        base: '/lib/layui/extend/'
+    }).use(['layer', 'element', 'fileManager', 'mouseRightMenu'], function () {
+        var layer = layui.layer;
+        var element = layui.element;
+        var $ = layui.$;
+        var fileManager = layui.fileManager;
+        var mouseRightMenu = layui.mouseRightMenu;
+        var dataList = [];
+
+        //剪切板，type=0为剪切，type=1，为复制功能
+        var clipboard = {ids: 0, type: 0};
+        $('#checkImgWindow').css('height', $(document).height() - 120 + 'px');
+        fileManager.render({
+            elem: '#checkImgWindow',
+            staticPath: '/lib/layui/extend/fileManager',
+            imgSrc: true,
+            uploadConfig: {
+                url: "/file/upload",//上传地址
+                field: 'multipartFile[]',
+                before: function () {
+                    layer.load(); //上传loading
+                },
+                done: function (result) {
+                    layer.closeAll('loading'); //关闭loading
+                    if (result.code == 0) {
+                        layer.msg('上传成功');
+                    } else {
+                        layer.alert('上传失败。' + result.msg);
+                    }
+                    fileManager.reload();
+                },
+                accept: "file"
+            },
+            pageConfig: true,
+            pageJump: function (obj, callback) {
+                var arg = {
+                    'dirId': obj.id,
+                    'limit': obj.limit,
+                    'page': obj.page
+                };
+                ajax("/file/list", "get", arg, function (r, d) {
+                    if (r) {
+                        if (d.code == 0) {
+                            callback(d.data, d.count);
+                        } else {
+                            layer.alert('加载出现了问题');
+                        }
+                    }
+                })
+            },
+            getPathList: function (obj, callback) {
+                var arg = {
+                    'limit': obj.limit,
+                    'page': 1,
+                    'dirId': obj.id,
+                };
+                ajax("/file/list", "get", arg, function (r, d) {
+                    if (r) {
+                        if (d.code == 0) {
+                            dataList = d.data;
+                            callback(d.data, d.count);
+                            // console.log(dataList);
+                        } else {
+                            layer.alert('加载出现了问题');
+                        }
+                    }
+                })
+            },
+            newDirDone: function (dirObj, name) {
+                ajax("/file/folder", "post", {'dirId': dirObj.id, 'fileName': name}, function (r, d) {
+                    if (r) {
+                        if (d.code == 0) {
+                            layer.alert('新建成功');
+                            fileManager.reload();
+                        } else {
+                            layer.alert('新建失败');
+                        }
+
+                    }
+                })
+            }
+        });
+
+
+        //点击文件
+        fileManager.listenClick(function (data) {
+            // console.log(data)
+            if (data.type != "dir") {
+                var d = getDataById(data.id);
+                // console.log(d);
+                // console.log(d);
+                var remark = d.remark != null ? d.remark : '暂无描述';
+                layer.alert(JSON.stringify(d), {
+                    title: '文件信息',
+                    content: '<p>文件名: ' + d.name + '</p>'
+                        + '<p>描述 : ' + remark + '</p>'
+                        + '<p>创建者: ' + d.creator + '</p>'
+                        + '<p>创建时间: ' + d.createTime + '</p>'
+                });
+            }
+
+        });
+        //右键点击文件
+        fileManager.listenClickRight(function (data) {
+            var menu_data = [
+                {'data': data, 'type': 1, 'title': '删除文件'},
+                {'data': data, 'type': 2, 'title': '重命名'},
+                {'data': data, 'type': 3, 'title': '剪切'},
+                {'data': data, 'type': 4, 'title': '复制'},
+                {'data': data, 'type': 6, 'title': '下载文件'},
+            ]
+            if (clipboard.ids) {
+                menu_data.push({'data': data, 'type': 5, 'title': '粘贴'});
+            }
+
+
+            mouseRightMenu.open(menu_data, false, function (d) {
+                var checks = fileManager.getMoreCheck();
+                var ids = [];
+                if (d.type == 1) {
+                    layer.confirm('删除后无法恢复，确定要进行删除吗？', function (index) {
+                        if (checks.length != 0) {
+                            for (var i = 0; i < checks.length; i++) {
+                                ids[i] = checks[i].id;
+                            }
+                        } else {
+                            ids[0] = d.data.id;
+                        }
+                        ajax("/file", "post", {'_method': 'delete', 'fileId[]': ids}, function (r, d) {
+                            // console.log(r,d)
+                            if (r && d.code == 0) {
+                                layer.msg('删除完成');
+                                fileManager.reload()
+                            } else {
+                                layer.alert('删除失败')
+                            }
+                        })
+                        layer.close(index);
+                    });
+                } else if (d.type == 2) {
+                    //重命名
+                    layer.prompt({title: '新名字', formType: 2, value: d.data.name}, function (text, index) {
+                        layer.close(index);
+                        ajax("/file", "post", {
+                            '_method': 'put',
+                            'fileId': d.data.id,
+                            'type': d.data.type,
+                            'fileName': text
+                        }, function (r, d) {
+                            if (r && d.code == 0) {
+                                layer.msg('操作成功');
+                                fileManager.reload()
+                            } else {
+                                layer.alert('操作失败')
+                            }
+                        })
+                    });
+                } else if (d.type == 3 || d.type == 4) {
+                    //剪切和复制
+                    if (checks.length != 0) {
+                        for (var i = 0; i < checks.length; i++) {
+                            ids[i] = checks[i].id;
+                        }
+                    } else {
+                        ids[0] = d.data.id;
+                    }
+                    clipboard['type'] = (d.type == 3) ? 0 : 1;
+                    clipboard['ids'] = ids;
+                    console.log('剪切板', clipboard);
+                    fileManager.closeMoreCheck();
+                } else if (d.type == 5) {
+                    //粘贴
+                    console.log(d.data.id);
+                    console.log('粘贴板', clipboard);
+                    var dirId = d.data.id;//待粘贴的路径id
+                    var a_data = {'type': clipboard['type'], 'fileId[]': clipboard['ids'], 'dirId': dirId};
+                    // console.log(a_data);
+                    ajax("/file/paste", "put", a_data, function (r, d) {
+                        // console.log(r,d)
+                        if (r && d.code == 0) {
+                            layer.msg('操作完成');
+                            fileManager.reload()
+                            if (clipboard['type'] == 0) {
+                                clipboard['ids'] = 0;
+                            }
+                        } else {
+                            layer.alert('操作失败')
+                        }
+                    })
+                } else if (d.type == 6) {
+                    layer.confirm('是否下载此文件？', function (index) {
+                        if (checks.length != 0) {
+                            layer.alert('暂不支持多文件下载');
+                        }
+                        if (d.data.type == 'dir') {
+                            layer.alert('暂不支持文件夹格式下载');
+                            return false;
+                        }
+                        ajax_download("/file/download/" + d.data.id, "get", d.data.name);
+                        layer.close(index);
+                    });
+                }
+                //return false;//阻止默认事件（关闭菜单）
+            });
+
+            return false;
+        });
+
+        //ajax 请求
+        function ajax(url, type, data, done) {
+            $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                success: function (r) {
+                    done(true, r)
+                },
+                error: function (r) {
+                    done(false, r)
+                },
+                async: true
+            });
+        }
+
+        // function ajax_download(url, type, fileName) {
+        //     $.ajax({
+        //         type: type,
+        //         url: url,
+        //         responseType: 'blob',
+        //         success: function (res) {
+        //             // console.log(res);
+        //             var blob = new Blob([res], {type: 'application/octet-stream'});
+        //             if ('download' in document.createElement('a')) {
+        //                 // 非IE下载
+        //                 const elink = document.createElement('a');
+        //                 elink.download = fileName;  //命名下载名称
+        //                 elink.style.display = 'none';
+        //                 elink.href = URL.createObjectURL(blob); //表示一个指定的file对象或Blob对象
+        //                 document.body.appendChild(elink);
+        //                 elink.click();  //点击触发下载
+        //                 URL.revokeObjectURL(elink.href); // 释放URL对象
+        //                 document.body.removeChild(elink);
+        //             } else {
+        //                 // IE10+下载
+        //                 navigator.msSaveBlob(blob, fileName);
+        //             }
+        //        
+        //         },
+        //         error: function (res) {
+        //             layer.alert("文件下载失败");
+        //         },
+        //         async: true,
+        //     });
+        // }
+
+        function ajax_download(url, type, fileName) {
+            $.ajax({
+                type: type,
+                url: url,
+                success: function (res) {
+                    if (res.data != null) {
+                        var url = "http://114.55.105.173/" + res.data.groupName + "/" + res.data.remoteFileName;
+                        getBlob(url, function (blob) {
+                            saveAs(blob, fileName);
+                        });
+                    } else {
+                        layer.alert(res.data);
+                    }
+                },
+                error: function (res) {
+                    layer.alert("文件下载失败");
+                },
+                async: true,
+            });
+        }
+
+        function getBlob(url, cb) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'blob';
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    cb(xhr.response);
+                }
+            };
+            xhr.send();
+        }
+
+        function saveAs(blob, fileName) {
+            if (window.navigator.msSaveOrOpenBlob) {
+                navigator.msSaveBlob(blob, fileName);
+            } else {
+                var link = document.createElement('a');
+                var body = document.querySelector('body');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = fileName;
+                
+                link.style.display = 'none';
+                body.appendChild(link);
+                
+                link.click();
+                body.removeChild(link);
+                
+                window.URL.revokeObjectURL(link.href);
+            }
+        }
+
+        function getDataById(id) {
+            var res = null;
+            dataList.forEach(data => {
+                if (data.id == id) {
+                    res = data;
+                }
+            });
+            return res;
+        }
+    });
+</script>
+</body>
+</html>

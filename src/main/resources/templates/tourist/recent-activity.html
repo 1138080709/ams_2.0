@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" content="">
+    <meta http-equiv="cleartype" content="on">
+    <title>活动</title>
+
+    <link rel="stylesheet" th:href="@{/css/tourist/base.css}">
+    <link rel="stylesheet" th:href="@{/css/tourist/tab.css}">
+    <link rel="stylesheet" th:href="@{/css/tourist/style.css}">
+    <link rel="stylesheet" th:href="@{/css/tourist/platform-1.css}">
+    <link rel="stylesheet" th:href="@{/lib/easyform/easyform.css}">
+    
+    <style>
+        .popup_login{
+            position:fixed;
+            top: 0;
+            width: 80%;
+            margin-left: 10%;
+            height: 1000px;
+            background: rgba(238,238,238,0.9);
+            z-index: 5;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="popup_login">
+    <div class="page">
+        <div class="header">
+            <a class="link title-ani"  data-letters="活动报名">活动报名</a>
+            <br>
+        </div>
+        <div class="form-div">
+            <form id="reg-form" action="" method="post">
+                <table>
+                    <tr>
+                        <td>姓名</td>
+                        <td><input name="uid" type="text" id="name"
+                                   data-easyform="length:4 16;char-normal;real-time;ajax:ajax_demo(1);"
+                                   data-message="用户名必须为4—16位的英文字母或数字"
+                                   data-easytip="position:top;class:easy-blue;" data-message-ajax="用户名已存在!">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>学号</td>
+                        <td><input name="psw1" type="text" id="digits" data-easyform="length:6 16;"
+                                   data-message="密码必须为6—16位"
+                                   data-easytip="class:easy-blue;"></td>
+                    </tr>
+                    <tr>
+                        <td>学院</td>
+                        <td><input name="psw2" type="text" id="department" data-easyform="length:6 16;equal:#psw1;"
+                                   data-message="两次密码输入要一致" data-easytip="class:easy-blue;"></td>
+                    </tr>
+                    <tr>
+                        <td>班级</td>
+                        <td><input name="email" type="text" id="Class" data-easyform="email;real-time;easytip:false;"
+                                   data-message="班级格式要正确"
+                                   data-easytip="class:easy-blue;"></td>
+                    </tr>
+                    <tr>
+                        <td>电话</td>
+                        <td><input name="nickname" type="text" id="phone" data-easyform="length:2 16;"
+                                   data-easytip="class:easy-blue;position:bottom;"></td>
+                    </tr>
+                </table>
+                <div class="buttons" style="margin-top: 50px;">
+                    <input id="sign_up" value="报 名" type="button" style="margin-right:20px; margin-top:20px;">
+                    <input id="close_popup" value="退 出" type="button" style="margin-right:45px; margin-top:20px;">
+                </div>
+                <br class="clear">
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="aui-nav-content-box" style="background: #fff;height: 1000px">
+        <div class="zySearch" id="zySearch" style="margin: 10px"></div>
+        <div class="aui-nav-list-tab">
+            <div id="content" class="aui-nav-list-item" style="display:block">
+            </div>
+        </div>
+    </div>
+</div>
+<input id="ide" type="text" style="position: absolute;top: -9999px">
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/easyform/easyform.js}"></script>
+<script type="text/javascript" th:src="@{/js/zySearch.js}"></script>
+<script type="text/javascript">
+    $("#zySearch").zySearch({
+        "width":"355",
+        "height":"33",
+        "parentClass":"pageTitle",
+        "callback":function(keyword){
+            console.info("搜索的关键字");
+            console.info(keyword);
+        }
+    });
+</script>
+<script>
+    window.onload=function(){
+        $.ajax({
+            url:'http://localhost:8080/activity/getList',
+            datatype: "json",
+            type: 'get',
+            async:false,
+            params:{"contentType": "application/json;charset=utf-8"},
+            xhrFields:{withCredentials:true},
+            success:function(res){
+                var str='';
+                
+                activity=res.data;
+                for(i in activity){
+                    // console.log(activity[i].activityTheme);
+                    if(activity[i].activityFlag==1) {
+                        str += "<div class='aui-page-list'>" +
+                            "<div class='aui-page-img'>" +
+                            "<a href='javascript:;'>" +
+                            "<img src='images/xiaoxiong.png'/>" +
+                            "</a>" +
+                            "</div>" +
+                            "<div class='aui-page-text'>" +
+                            "<h2>" +
+                            "<a id='" + activity[i].id + "'  onclick='threeFn(this.id)'>" + activity[i].activityTheme + "</a>" +
+                            "</h2>" +
+                            "<em>活动时间:" + activity[i].startTime + "到" + activity[i].overTime + "</em>" +
+                            "<br/><em>描述：" + activity[i].detailInfo + "</em>" +
+                            "<br/><span class='aui-comment'>负责人:" + activity[i].principalName + "</span>" +
+                            "</p>" +
+                            "</div>" +
+                            "</div>";
+                    }
+                }
+                $('#content').append(str);
+            },
+            error:function(){
+
+            }
+        });
+    }
+    $("button").click(function(){
+        console.log("搜索");
+        $('#content').empty();;
+        var text=$("#searchInput").val();
+        var str='';
+        $.ajax({
+            url:'http://localhost:8080/ams/activity/queryActivityDetail',
+            datatype: "json",
+            type: 'post',
+            async:false,
+            xhrFields:{withCredentials:true},
+            data:{words:text},
+            success:function(e){
+                atf=e.resultMap.targetList;
+                console.log(atf);
+                for(i in atf){
+                    if(atf[i].activityFlag==1)
+                    {
+                        str+="<div class='aui-page-list'>"+
+                            "<div class='aui-page-img'>"+
+                            "<a href='javascript:;'>"+
+                            "<img src='images/xiaoxiong.png'/>"+
+                            "</a>"+
+                            "</div>"+
+                            "<div class='aui-page-  text'>"+
+                            "<h2>"+
+                            "<a id='"+atf[i].id+"' onclick='threeFn(this.id)'>"+atf[i].detailInfo+"</a>"+
+                            "</h2>"+
+                            "<em>活动时间:"+atf[i].startTime+"到"+atf[i].overTime+"</em>"+
+                            "<br/><em>主题："+atf[i].activityTheme+"</em>"+
+                            "<br/><span class='aui-comment'>负责人:"+atf[i].principalName+"</span>"+
+                            "</p>"+
+                            "</div>"+
+                            "</div>";
+                    }
+                }
+                $('#content').append(str);
+            },
+            error:function(e){
+                alert(e.message);}
+        });
+    });
+
+    function threeFn(id){
+        $('.popup_login').show();
+        $('#ide').val(id);
+    }
+    $('#close_popup').click(function(){
+        $('.popup_login').hide();
+    });
+    $('#sign_up').click(function(){
+        par={'participatorName':$('#name').val(),'participatorDigits':$('#digits').val(),'participatorDepartment':$('#department').val(),'participatorClass':$('#Class').val(),'Id':$('#ide').val()};
+        if(par.participatorName!=''&&par.participatorDigits!=''&&par.participatorDepartment!=''&&par.participatorClass!=''){
+            console.log(par);
+            $.ajax({
+                url:'http://localhost:8080/ams/activity/applyActivity',
+                datatype: "json",
+                type: 'get',
+                xhrFields:{withCredentials:true},
+                data:par,
+                async:false,
+                success:function(e){
+                    console.log(e.statusCode);
+                    alert(e.message);
+                },
+                error:function(e){
+                    console.log(e.statusCode);
+                    alert(e.message);
+                }
+            });
+        }
+        else
+        {
+            alert("请填完成信息!");
+        }
+    });
+</script>
+<script type="text/javascript">
+    //tab切换
+    $(function(){
+        $('.aui-nav-list-box ul li').click(function(){
+            $(this).addClass('aui-current').siblings().removeClass('aui-current');
+            $('.aui-nav-list-tab>div:eq('+$(this).index()+')').show().siblings().hide();
+        })
+    });
+
+    //导航浮动
+    $(function(){
+        var _line=parseInt($(window).height()/3);
+        $(window).scroll(function(){
+            if ($(window).scrollTop()>60) {
+                $('.aui-nav-list-box').css({'position':'fixed','top':0})
+            }else{
+                $('.aui-nav-list-box').css({'position':'','top':''})
+            };
+        });
+
+    });
+</script>
+
+</body>
+</html>

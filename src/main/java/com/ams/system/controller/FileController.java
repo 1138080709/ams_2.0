@@ -42,13 +42,20 @@ public class FileController {
         return ResultBean.success();
     }
 
+//    @ApiOperation("下载文件")
+//    @GetMapping("/download/{fileId}")
+//    public void download(@PathVariable("fileId") Integer fileId, HttpServletResponse response) throws IOException {
+//        fileService.download(fileId, response);
+//    }
+
     @ApiOperation("下载文件")
     @GetMapping("/download/{fileId}")
-    public ResultBean download(@PathVariable("fileId") Integer fileId, HttpServletResponse response) throws IOException {
-        fileService.download(fileId, response);
-        return ResultBean.success();
+    @ResponseBody
+    public ResultBean download(@PathVariable("fileId") Integer fileId) throws IOException {
+        File file = fileService.selectFileById(fileId);
+        return ResultBean.success(file);
     }
-
+    
 //    @ApiOperation("下载文件")
 //    @PostMapping("/download")
 //    @ResponseBody

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>资金</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/lib/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+    <link rel="stylesheet" th:href="@{/lib/layui/extend/formSelects-v4.css}"/>
+</head>
+
+<body>
+<div class="z-body animated fadeIn">
+    <form action="" method="post" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label for="infoType" class="layui-form-label">资金类型</label>
+            <div class="layui-input-block">
+                <select name="infoType" id="infoType" lay-filter="leixing" th:value="${cash?.infoType}">
+                    <option value=""></option>
+                    <option value="0">支出</option>
+                    <option value="1">收入</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="money" class="layui-form-label">金额</label>
+            <div class="layui-input-block">
+                <input type="text" name="money" id="money" lay-verify="number" autocomplete="off" class="layui-input" th:value="${cash?.money}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="remark" class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+<!--                <textarea type="text" id="remark" name="remark" class="layui-textarea" th:value="${cash?.remark}"></textarea>-->
+                <input type="text" id="remark" name="remark" class="layui-input" th:value="${cash?.remark}">
+            </div>
+        </div>
+        
+     
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-left: 0;text-align: center;">
+                <input type="hidden" id="cashId" name="cashId" th:value="${cash?.cashId}">
+                <button th:text="${cash}?'修改':'增加'" class="layui-btn layui-btn-normal btn-w100" lay-submit=""
+                        data-th-lay-filter="${cash}?'edit':'add'"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/lib/layui/layui.js}"></script>
+<script th:src="@{/js/common.js}"></script>
+<script>
+    layui.config({
+        base: '/lib/layui/extend/'
+    }).extend({
+        formSelects: 'formSelects-v4'
+    }).use(['form', 'layer', 'formSelects'], function () {
+        $ = layui.jquery;
+        var form = layui.form,
+            layer = layui.layer,
+            formSelects = layui.formSelects;
+
+        // 监听提交（添加物资）
+        form.on('submit(add)', function (form) {
+            form.field.method = 'POST';
+            form.field.role = formSelects.value('role-select', 'val');
+            $.post('/finance/cash', form.field, function (result) {
+                handlerResult(result, addDone)
+            });
+            return false;
+        });
+
+        // 监听提交（编辑物资）
+        form.on('submit(edit)', function (form) {
+            form.field._method = 'PUT';
+            form.field.role = formSelects.value('role-select', 'val');
+            $.post('/finance/cash', form.field, function (result) {
+                handlerResult(result, editDone);
+            });
+            return false;
+        });
+
+        function addDone(data) {
+            layer.msg("添加成功", {icon: 6});
+        }
+
+        function editDone(data) {
+            layer.msg("修改成功", {icon: 6});
+        }
+    });
+</script>
+</body>
+
+</html>

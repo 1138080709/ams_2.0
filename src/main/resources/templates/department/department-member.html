@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>部门</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/lib/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+    <link rel="stylesheet" th:href="@{/lib/layui/extend/formSelects-v4.css}"/>
+</head>
+
+<body>
+    <div class="z-body animated fadeIn">
+        <input type="hidden" id="departmentId" name="departmentId" th:value="${department?.departmentId}">
+        <table class="layui-hide" id="member-table"></table>
+    </div>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/lib/layui/layui.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+    <script>
+        layui.config({
+            base: '/lib/layui/extend/'
+        }).use(['table', 'element', 'tablePlug'], function () {
+            var table = layui.table;
+            var $ = layui.$;
+            var tablePlug = layui.tablePlug;
+    
+            var departmentId = $("#departmentId").val();
+            console.log(departmentId);
+            tablePlug.smartReload.enable(true);
+        
+            table.render({
+                elem: '#member-table'
+                , url: '/department/member/'+departmentId + '/list'
+                , page: false
+                , title: '部门成员表'
+                , smartReloadModel: true
+                , cols: [
+                    [
+                        {type: 'numbers', title: '序号', align: 'center', width: "5%"}
+                        , {field: 'name', title: '姓名', align: 'center', width: "10%"}
+                        , {field: 'digits', title: '学号', align: 'center', width: "17%"}
+                        , {field: 'college', title: '学院', align: 'center', width: "20%"}
+                        , {field: 'major', title: '专业', align: 'center', width: "20%"}
+                        , {field: 'phone', title: '手机号码', align: 'center', width: "15%"}
+                        , {field: 'job', title: '职位', align: 'center'}
+                    ]
+                ]
+                , done: function (res, curr, count) {
+                    $('table').width("100%")
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
